@@ -1,0 +1,23 @@
+# CROW-IMBOR (v1.2.0)
+# Geef me een lijst met alle Beheerobjecten binnen een IMBOR Vakdiscipline ({{&preflabel}})
+# Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/select
+
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?VakdisciplineURI ?VakdisciplineLabel ?FysiekObjectURI ?FysiekObjectLabel
+WHERE {
+# Selecteer de klasse <<parameter>> binnen de groeperingen ...
+
+		#mv: iets anders opgelost (20200402(
+    	# BIND ("{{&preflabel}}"@nl-NL as ?VakdisciplineLabel)
+    			?VakdisciplineURI a skos:Collection;
+                       				skos:prefLabel ?VakdisciplineLabel .
+									
+		FILTER (CONTAINS(LCASE(?VakdisciplineLabel), "{{&preflabel}}")) # test op gedeeltelijke match
+       	
+ # ... en laat de members van die groep zien.                          
+		?VakdisciplineURI			skos:member ?FysiekObjectURI .
+    	?FysiekObjectURI skos:prefLabel ?FysiekObjectLabel .
+        FILTER regex(str(?FysiekObjectURI), "crow/imbor").
+}
+ORDER BY str(?FysiekObjectLabel)	

@@ -1,0 +1,44 @@
+# CROW-IMBOR (v1.2.0)
+# Geef me alle eigenschappen met vastewaardelijsten en/of met eenheden en/of grootheden
+# Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/select
+
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX nta8035: <https://w3id.org/def/basicsemantics-owl#>
+
+SELECT ?EigenschapURI ?EigenschapLabel ?VastewaardeLijstURI ?VastewaardeLijstLabel ?VastewaardeURI ?VastewaardeLabel ?Eenheid ?Grootheid
+WHERE {
+
+# Selecteer alle SHACL property shapes ... 
+    	?SHACLPropertyShape a sh:PropertyShape .
+# ... met een relatie naar een eigenschap ...
+    	?SHACLPropertyShape sh:path ?EigenschapURI .
+    	?EigenschapURI skos:prefLabel ?EigenschapLabel .
+
+# Zowel Object- als Datatype-Property (dus met eenheid) ...
+		{
+			?EigenschapURI a owl:ObjectProperty .
+		}
+UNION 	{
+   		    ?EigenschapURI a owl:DatatypeProperty .
+		}
+		
+# ... en laat dan waar mogelijk de vastewaardelijsten zien, met hun waarden ...
+OPTIONAL {   ?SHACLPropertyShape sh:class ?VastewaardeLijstURI .
+					?VastewaardeLijstURI skos:prefLabel ?VastewaardeLijstLabel .
+					?VastewaardeURI a ?VastewaardeLijstURI .
+    				?VastewaardeURI skos:prefLabel ?VastewaardeLabel .
+   		 }
+# ... en laat dan waar mogelijk de eenheden zien ...
+OPTIONAL {   ?EigenschapURI nta8035:unit ?Eenheid .
+                          
+		 }
+# ... en laat dan waar mogelijk de grootheden zien.
+OPTIONAL {   ?EigenschapURI nta8035:quantityKind ?Grootheid .
+                          
+		 }		 
+} 
+
+ORDER BY str(?EigenschapLabel) str(?VastewaardeLabel) ?VastewaardeLijstLabel str(?Eenheid) str(?Grootheid)
+

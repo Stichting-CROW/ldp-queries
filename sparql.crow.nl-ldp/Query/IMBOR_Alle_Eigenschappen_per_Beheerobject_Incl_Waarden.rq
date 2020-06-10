@@ -1,0 +1,42 @@
+# CROW-IMBOR (v1.2.0) (20200402)
+# Geef me alle eigenschappen van een bepaald object {{&preflabel}}. En laat zien welke vastewaardelijst erbij hoort, en/of grootheid & eenheid en/of dat het een annotation property is
+# Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/select
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX nta8035: <https://w3id.org/def/basicsemantics-owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+
+SELECT ?FysiekObjectURI ?FysiekObjectLabel ?EigenschapURI ?EigenschapLabel ?VastewaardeURI ?VastewaardeLabel ?VastewaardeLijstURI ?VastewaardeLijstLabel ?Eenheid ?Grootheid
+WHERE {
+		    ?FysiekObjectURI rdfs:subClassOf* nta8035:PhysicalObject.
+            ?FysiekObjectURI skos:prefLabel ?preflabel .
+# ... alleen binnen IMBOR objecten.
+			FILTER regex(str(?FysiekObjectURI), "crow/imbor")
+			
+			#FILTER (LCASE(str(?preflabel)) = "{{&preflabel}}") # heel woord
+			#FILTER (regex(?preflabel, "{{&preflabel}}", "i")) # gedeelte
+			FILTER (CONTAINS(LCASE(?preflabel), "{{&preflabel}}")) # gedeeltelijke match (sneller dan regex?)
+			BIND (?preflabel AS ?FysiekObjectLabel)
+	
+# ... en die een SHACL shape hebben, inclusief overgeerfde.
+            ?SHACLNodeShape sh:targetClass/^rdfs:subClassOf* ?FysiekObjectURI .
+            ?SHACLNodeShape sh:property ?SHACLPropertyShape .
+# Laat de relatie zien van de SHACL Shape, naar de eigenschap.
+            ?SHACLPropertyShape sh:path ?EigenschapURI .
+            ?EigenschapURI skos:prefLabel ?EigenschapLabel .
+# En filter de hasPart relaties eruit om alleen echte eigenschappen te zien.
+			MINUS { ?SHACLPropertyShape sh:path nta8035:hasPart }
+
+# ... en laat dan waar mogelijk de vastewaardelijsten zien, met hun waarden ...
+OPTIONAL {   ?SHACLPropertyShape sh:class ?VastewaardeLijstURI .
+					?VastewaardeLijstURI skos:prefLabel ?VastewaardeLijstLabel .
+					?VastewaardeURI a ?VastewaardeLijstURI .
+    				?VastewaardeURI skos:prefLabel ?VastewaardeLabel
+   		 }
+# ... en laat dan waar mogelijk de eenheden en eenheid soorten zien.
+OPTIONAL {   ?EigenschapURI nta8035:unit ?Eenheid ;
+                            nta8035:quantityKind ?Grootheid.
+		 }
+}
+ORDER BY str(?FysiekObjectLabel) str(?EigenschapLabel)

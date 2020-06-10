@@ -1,0 +1,5 @@
+SELECT (COUNT (*) AS ?Aantal_triples_in_endpoint)
+WHERE
+{ 
+    ?s ?p ?o .
+}

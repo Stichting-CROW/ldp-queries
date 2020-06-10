@@ -1,0 +1,42 @@
+# CROW-IMBOR (v1.2.0)
+# Geef me alle Eigenschappen van een Beheerobject <<parameter>>  (inclusief overerving) 
+# Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/select
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX nta8035: <https://w3id.org/def/basicsemantics-owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+
+SELECT ?FysiekObjectURI ?FysiekObjectLabel ?EigenschapURI ?EigenschapLabel ?EigenschapVanObjectLabel
+
+WHERE {
+
+# Het kan zien dat dit aangepast moet worden naar subClassOf nta8035:PhysicalObject
+            ?FysiekObjectURI skos:prefLabel ?preflabel .
+            
+# ... alleen binnen IMBOR objecten.
+            FILTER regex(str(?FysiekObjectURI), "crow/imbor")
+            
+            FILTER (LCASE(str(?preflabel)) = "{{&preflabel}}") # heel woord
+            #FILTER (CONTAINS(?preflabel, "{{&preflabel}}")) # gedeelte
+            BIND (?preflabel AS ?FysiekObjectLabel)
+            
+# Trek het property-path uit elkaar, maak de SHACL shapes optioneel, deze zijn niet altijd aanwezig
+            ?FysiekObjectURI rdfs:subClassOf* ?SuperKlasse .
+            ?SuperKlasse skos:prefLabel ?EigenschapVanObjectLabel .
+            
+    OPTIONAL
+    {
+            ?SHACLNodeShape sh:targetClass ?SuperKlasse .
+            ?SHACLNodeShape sh:property ?SHACLPropertyShape .
+
+# Laat de relatie zien van de SHACL Shape, naar de eigenschap.
+            ?SHACLPropertyShape sh:path ?EigenschapURI .
+            ?EigenschapURI skos:prefLabel ?EigenschapLabel .
+
+# En filter de hasPart relaties eruit om alleen echte eigenschappen te zien.
+            MINUS { ?SHACLPropertyShape sh:path nta8035:hasPart }
+    }
+}
+
+ORDER BY str(?FysiekObjectLabel) str(?EigenschapLabel) str(?EigenschapVanObjectLabel)
