@@ -1,3 +1,5 @@
+# Tel het aantal triples in het endpoint
+
 SELECT (COUNT (*) AS ?Aantal_triples_in_endpoint)
 WHERE
 { 

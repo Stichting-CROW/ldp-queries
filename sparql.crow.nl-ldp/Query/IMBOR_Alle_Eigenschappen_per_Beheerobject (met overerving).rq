@@ -1,5 +1,5 @@
 # CROW-IMBOR (v1.2.0)
-# Geef me alle Eigenschappen van een Beheerobject <<parameter>>  (inclusief overerving) 
+# Geef me alle Eigenschappen van een Beheerobject [filNam] (inclusief overerving) 
 # Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/select
 
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -17,8 +17,8 @@ WHERE {
 # ... alleen binnen IMBOR objecten.
             FILTER regex(str(?FysiekObjectURI), "crow/imbor")
             
-            FILTER (LCASE(str(?preflabel)) = "{{&preflabel}}") # heel woord
-            #FILTER (CONTAINS(?preflabel, "{{&preflabel}}")) # gedeelte
+            FILTER (LCASE(str(?preflabel)) = "{{&filNam}}") # heel woord
+            #FILTER (CONTAINS(?preflabel, "{{&filNam}}")) # gedeelte
             BIND (?preflabel AS ?FysiekObjectLabel)
             
 # Trek het property-path uit elkaar, maak de SHACL shapes optioneel, deze zijn niet altijd aanwezig

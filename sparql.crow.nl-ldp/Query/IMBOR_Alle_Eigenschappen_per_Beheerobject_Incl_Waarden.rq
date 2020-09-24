@@ -1,5 +1,5 @@
 # CROW-IMBOR (v1.2.0) (20200402)
-# Geef me alle eigenschappen van een bepaald object {{&preflabel}}. En laat zien welke vastewaardelijst erbij hoort, en/of grootheid & eenheid en/of dat het een annotation property is
+# Geef me alle eigenschappen van een bepaald object [filNam]. En laat zien welke vastewaardelijst erbij hoort, en/of grootheid & eenheid en/of dat het een annotation property is
 # Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/select
 
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -14,9 +14,9 @@ WHERE {
 # ... alleen binnen IMBOR objecten.
 			FILTER regex(str(?FysiekObjectURI), "crow/imbor")
 			
-			#FILTER (LCASE(str(?preflabel)) = "{{&preflabel}}") # heel woord
-			#FILTER (regex(?preflabel, "{{&preflabel}}", "i")) # gedeelte
-			FILTER (CONTAINS(LCASE(?preflabel), "{{&preflabel}}")) # gedeeltelijke match (sneller dan regex?)
+			#FILTER (LCASE(str(?preflabel)) = "{{&filNam}}") # heel woord
+			#FILTER (regex(?preflabel, "{{&filNam}}", "i")) # gedeelte
+			FILTER (CONTAINS(LCASE(?preflabel), "{{&filNam}}")) # gedeeltelijke match (sneller dan regex?)
 			BIND (?preflabel AS ?FysiekObjectLabel)
 	
 # ... en die een SHACL shape hebben, inclusief overgeerfde.
