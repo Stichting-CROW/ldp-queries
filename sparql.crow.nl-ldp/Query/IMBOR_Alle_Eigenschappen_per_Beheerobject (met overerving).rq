@@ -1,6 +1,6 @@
 # CROW-IMBOR (2020-08)
 # Geef me alle Eigenschappen van een Beheerobject [filNam] (inclusief overerving) 
-# Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/select
+# Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/
 
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX nta8035: <https://w3id.org/def/basicsemantics-owl#>
@@ -25,12 +25,10 @@ WHERE {
             #FILTER (CONTAINS(?preflabel, "{{&filNam}}")) # gedeelte
             BIND (?preflabel AS ?FysiekObjectLabel)
             
-# Trek het property-path uit elkaar, maak de SHACL shapes optioneel, deze zijn niet altijd aanwezig
+# Trek het property-path uit elkaar om de superklasse te laten zien.
             ?FysiekObjectURI rdfs:subClassOf* ?SuperKlasse .
             ?SuperKlasse skos:prefLabel ?EigenschapVanObjectLabel .
             
-    OPTIONAL
-    {
             ?SHACLNodeShape sh:targetClass ?SuperKlasse .
             ?SHACLNodeShape sh:property ?SHACLPropertyShape .
 
@@ -41,7 +39,7 @@ WHERE {
 
 # ... en filter de hasPart relaties eruit om alleen echte eigenschappen te zien.
             MINUS { ?SHACLPropertyShape sh:path nta8035:hasPart }
-    }
+    
 }
 
 ORDER BY str(?FysiekObjectLabel) str(?EigenschapLabel) str(?EigenschapVanObjectLabel)
