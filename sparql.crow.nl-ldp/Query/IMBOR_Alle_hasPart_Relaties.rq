@@ -1,4 +1,4 @@
-# CROW-IMBOR (v1.2.0)
+# CROW-IMBOR (2020-08)
 # Geef me een lijst met 'hasPart' relaties binnen IMBOR
 # Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/select
 
@@ -6,13 +6,17 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX nta8035: <https://w3id.org/def/basicsemantics-owl#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX groep: <http://linkeddata.crow.nl/publication-v2/ns/crow/imbor/def/groepering/>
 
-SELECT ?FysiekObjectURI ?FysiekObjectLabel ?FysiekObjectmetOnderdeelURI ?FysiekObjectmetOnderdeelLabel
+SELECT ?FysiekObjectURI ?FysiekObjectLabel ?FysiekObjectmetOnderdeelURI ?FysiekObjectmetOnderdeelLabel ?Versie
 WHERE {
 # Selecteer alleen fysieke objecten ...
     ?FysiekObjectURI rdfs:subClassOf* nta8035:PhysicalObject ; 
          			  skos:prefLabel ?FysiekObjectLabel .
-    FILTER regex(str(?FysiekObjectURI), "crow/imbor")     			  
+    FILTER regex(str(?FysiekObjectURI), "crow/imbor")     
+# ... en die voorkomen in deze versie ...
+    groep:Versie2020-08 skos:member ?FysiekObjectURI ;
+            rdfs:label ?Versie .
 # ... en die een SHACL shape hebben ...
             ?SHACLNodeShape sh:targetClass ?FysiekObjectURI .
     		?SHACLNodeShape sh:property [ 

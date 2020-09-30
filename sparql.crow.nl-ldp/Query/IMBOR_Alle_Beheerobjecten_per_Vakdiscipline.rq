@@ -1,23 +1,26 @@
-# CROW-IMBOR (v1.2.0)
+# CROW-IMBOR (2020-08)
 # Geef me een lijst met alle Beheerobjecten binnen een IMBOR Vakdiscipline [filDis]
 # Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/select
 
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX groep: <http://linkeddata.crow.nl/publication-v2/ns/crow/imbor/def/groepering/>
 
-SELECT ?VakdisciplineURI ?VakdisciplineLabel ?FysiekObjectURI ?FysiekObjectLabel
+SELECT ?VakdisciplineURI ?VakdisciplineLabel ?FysiekObjectURI ?FysiekObjectLabel ?Versie
 WHERE {
 # Selecteer de klasse <<parameter>> binnen de groeperingen ...
 
-		#mv: iets anders opgelost (20200402(
-    	# BIND ("{{&filDis}}"@nl-NL as ?VakdisciplineLabel)
-    			?VakdisciplineURI a skos:Collection;
-                       				skos:prefLabel ?VakdisciplineLabel .
+		?VakdisciplineURI a skos:Collection;
+            	skos:prefLabel ?VakdisciplineLabel .
 									
-		FILTER (CONTAINS(LCASE(?VakdisciplineLabel), "{{&filDis}}")) # test op gedeeltelijke match
+		FILTER (CONTAINS(LCASE(?VakdisciplineLabel), "{{&filDis}}")) # test op gedeeltelijke match (moet lowercase bij testen)
        	
  # ... en laat de members van die groep zien.                          
 		?VakdisciplineURI			skos:member ?FysiekObjectURI .
     	?FysiekObjectURI skos:prefLabel ?FysiekObjectLabel .
         FILTER regex(str(?FysiekObjectURI), "crow/imbor").
+
+# ... en die voorkomen in deze versie.
+    groep:Versie2020-08 skos:member ?FysiekObjectURI ;
+            rdfs:label ?Versie .
 }
 ORDER BY str(?FysiekObjectLabel)	

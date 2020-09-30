@@ -1,23 +1,31 @@
-# CROW-IMBOR (v1.2.0)
+# CROW-IMBOR (2020-08)
 # Geef me een lijst met alle Beheerobjecten van IMBOR
 # Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/select
 
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX groep: <http://linkeddata.crow.nl/publication-v2/ns/crow/imbor/def/groepering/>
 
-SELECT distinct ?FysiekObjectURI ?FysiekObjectLabel  ?FysiekObjectDefinitie ?Parent ?ParentLabel
+SELECT distinct ?FysiekObjectURI ?FysiekObjectLabel  ?FysiekObjectDefinitie ?Parent ?ParentLabel ?Versie
 WHERE {
 # Selecteer alleen klassen ...
     ?FysiekObjectURI a rdfs:Class ; 
 # ... die direct of door overerving een subklasse zijn van IMBOR:Beheerobject ...
-           rdfs:subClassOf+ <http://linkeddata.crow.nl/publication-v2/ns/crow/imbor/version/1243521994744365056/def/objecttype/OBB400> ; 
+
+### <Dit werkt niet met Postman>
+###          rdfs:subClassOf+ <http://linkeddata.crow.nl/publication-v2/ns/crow/imbor/def/objecttype/OBB400> ; 
+###
+
 # ... en een preferred label hebben ...
            skos:prefLabel ?FysiekObjectLabel . 
+# ... en die voorkomen in deze versie ...
+    groep:Versie2020-08 skos:member ?FysiekObjectURI ;
+            rdfs:label ?Versie .
 # ... en wellicht een definitie hebben.
            OPTIONAL{ ?FysiekObjectURI skos:definition ?FysiekObjectDefinitie }.
 # ... en van welke superclass dit een subclass is
            ?FysiekObjectURI rdfs:subClassOf ?Parent .
-# ... en wellicth de naam van de parent     
+# ... en wellicht de naam van de parent     
            OPTIONAL{?Parent skos:prefLabel ?ParentLabel }.
 }
 ORDER BY str(?FysiekObjectLabel)
