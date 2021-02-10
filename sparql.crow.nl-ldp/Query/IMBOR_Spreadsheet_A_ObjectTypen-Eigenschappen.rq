@@ -40,4 +40,4 @@ WHERE {
     
 }
 
-ORDER BY str(?FysiekObjectLabel) str(?EigenschapLabel) str(?EigenschapVanObjectLabel)
+ORDER BY str(?FysiekObjectLabel) str(?EigenschapVanObjectLabel) str(?EigenschapLabel)
