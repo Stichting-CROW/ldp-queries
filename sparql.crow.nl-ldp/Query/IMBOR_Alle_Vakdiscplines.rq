@@ -1,0 +1,21 @@
+# CROW-IMBOR (2020-08)
+# Geef me een lijst met alle Vakdisciplines
+# Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/select
+
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX groep: <http://linkeddata.crow.nl/publication-v2/ns/crow/imbor/def/groepering/>
+
+SELECT ?VakdisciplineURI ?VakdisciplineLabel ?VakdisciplineToelichting ?Versie
+WHERE {
+# Selecteer de vakdiscplines
+
+		groep:IMBORVakdisciplineCollectie skos:member ?VakdisciplineURI .
+        ?VakdisciplineURI a skos:Collection;
+               	skos:prefLabel ?VakdisciplineLabel .
+        OPTIONAL{  ?VakdisciplineURI rdfs:comment ?VakdisciplineToelichting  } .
+
+# ...  die voorkomen in deze versie.
+    groep:Versie2020-08 skos:member ?VakdisciplineURI ;
+            rdfs:label ?Versie .
+}
+ORDER BY str(?VakdisciplineLabel)	

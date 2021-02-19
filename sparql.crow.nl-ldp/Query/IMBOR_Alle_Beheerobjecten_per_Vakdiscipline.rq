@@ -5,7 +5,7 @@
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX groep: <http://linkeddata.crow.nl/publication-v2/ns/crow/imbor/def/groepering/>
 
-SELECT ?VakdisciplineURI ?VakdisciplineLabel ?FysiekObjectURI ?FysiekObjectLabel ?Versie
+SELECT ?VakdisciplineURI ?VakdisciplineLabel ?FysiekObjectURI ?FysiekObjectLabel ?FysiekObjectDefinitie ?Versie
 WHERE {
 # Selecteer de klasse <<parameter>> binnen de groeperingen ...
 
@@ -17,6 +17,8 @@ WHERE {
  # ... en laat de members van die groep zien.                          
 		?VakdisciplineURI			skos:member ?FysiekObjectURI .
     	?FysiekObjectURI skos:prefLabel ?FysiekObjectLabel .
+# ... en wellicht een definitie hebben ...
+           OPTIONAL{ ?FysiekObjectURI skos:definition ?FysiekObjectDefinitie }.
         FILTER regex(str(?FysiekObjectURI), "crow/imbor").
 
 # ... en die voorkomen in deze versie.
