@@ -82,6 +82,9 @@ WHERE {
                 ] .
             } union {
               ?FysiekObjectURI rdfs:subClassOf ?SuperKlasse .
+            } union {
+              # ?SuperKlasse == ?FysiekObjectURI
+              ?SuperKlasse skos:prefLabel ?FysiekObjectLabel .
             }
 
             ?SuperKlasse skos:prefLabel ?EigenschapVanObjectLabel .
