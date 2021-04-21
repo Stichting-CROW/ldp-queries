@@ -52,4 +52,4 @@ OPTIONAL {   ?EigenschapURI nta8035:quantityKind ?Grootheid .
          BIND ( COALESCE(?maximaal1, "n") AS ?MaximaalAantalVoorkomen)
 } 
 
-ORDER BY str(?EigenschapLabel) str(?VastewaardeLijstLabel? str(?Eenheid) str(?Grootheid)
+ORDER BY str(?EigenschapLabel) str(?VastewaardeLijstLabel) str(?Eenheid) str(?Grootheid)
