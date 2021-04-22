@@ -10,7 +10,7 @@ PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX groep: <http://linkeddata.crow.nl/publication-v2/ns/crow/imbor/def/groepering/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
-SELECT ?EigenschapURI ?EigenschapLabel ?EigenschapDefinitie ?VastewaardeLijstURI ?Datatype ?Eenheid ?Grootheid ?Versie
+SELECT ?EigenschapURI ?EigenschapLabel ?EigenschapDefinitie ?Overgeerfd ?EigenschapVanObjectLabel ?VastewaardeLijstURI ?Datatype ?Eenheid ?Grootheid ?Versie 
 
 WHERE {
 
@@ -87,9 +87,11 @@ WHERE {
             } UNION {
               ?SuperKlasse skos:prefLabel ?FysiekObjectLabel .
             }
+# Laat zien of de eigenschap is overgeerfd doormiddel van een Ja/Nee kolom en van welk object dat dan komt
 
             ?SuperKlasse skos:prefLabel ?EigenschapVanObjectLabel .
-            
+            BIND( if(?FysiekObjectURI = ?SuperKlasse,"Nee","Ja") as ?Overgeerfd )
+                   
             ?SHACLNodeShape sh:targetClass ?SuperKlasse .
             ?SHACLNodeShape sh:property ?SHACLPropertyShape .
 
@@ -98,6 +100,8 @@ WHERE {
     UNION   { ?SHACLPropertyShape sh:path ?EigenschapURI .}
             ?EigenschapURI skos:prefLabel ?EigenschapLabel .
 	OPTIONAL {?EigenschapURI skos:definition ?EigenschapDefinitie }.
+
+
  
 # ... en filter de hasPart relaties eruit om alleen echte eigenschappen te zien ...
             MINUS { ?SHACLPropertyShape sh:path nta8035:hasPart }
