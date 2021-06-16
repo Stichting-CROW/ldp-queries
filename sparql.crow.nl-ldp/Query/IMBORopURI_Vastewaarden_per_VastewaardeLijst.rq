@@ -31,7 +31,7 @@ UNION   { ?SHACLPropertyShape sh:path ?EigenschapURI .}
   				?SHACLPropertyShape sh:class ?VastewaardeLijstURI .
 			     	?VastewaardeURI a ?VastewaardeLijstURI .
     				?VastewaardeURI skos:prefLabel ?VastewaardeLabel .
-    OPTIONAL {	?VastewaardeURI skos:defintion ?VastewaardeDefinitie .}
+    OPTIONAL {	?VastewaardeURI skos:definition ?VastewaardeDefinitie .}
      		 
 } 
 
