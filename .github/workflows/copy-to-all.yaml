@@ -1,7 +1,7 @@
 name: Copy all queries from subdirs/ to all/
 
 on: push
-  
+
 jobs:
   copy_to_all:
     runs-on: ubuntu-latest
@@ -18,5 +18,5 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add .
-          git commit -m "Update src/all queries"
+          git diff-index --quiet HEAD || git commit -m "Copy queries to src/all"
           git push
