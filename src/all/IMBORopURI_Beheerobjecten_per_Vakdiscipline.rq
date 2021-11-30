@@ -1,0 +1,30 @@
+# CROW-IMBOR (2020-08)
+# Geef me een lijst met alle Beheerobjecten binnen een Vakdiscipline [filURI]
+# Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX groep: <http://linkeddata.crow.nl/publication-v2/ns/crow/imbor/def/groepering/>
+
+SELECT ?VakdisciplineLabel ?VakdisciplineToelichting ?FysiekObjectURI ?FysiekObjectLabel ?FysiekObjectDefinitie ?Versie
+WHERE {
+
+# Geef de eigenschap URI.
+	BIND (IRI("{{&filURI}}") as ?VakdisciplineURI)
+   
+# Met een Label en eventueel een toelichting ...
+		?VakdisciplineURI skos:prefLabel ?VakdisciplineLabel .
+    OPTIONAL {?VakdisciplineURI rdfs:comment ?VakdisciplineToelichting}.
+       	
+ # ... en laat de members van die groep zien.                          
+		?VakdisciplineURI	skos:member ?FysiekObjectURI .
+    	?FysiekObjectURI skos:prefLabel ?FysiekObjectLabel .
+# ... en wellicht een definitie hebben ...
+           OPTIONAL{ ?FysiekObjectURI skos:definition ?FysiekObjectDefinitie }.
+        FILTER regex(str(?FysiekObjectURI), "crow/imbor").
+
+# ... en die voorkomen in deze versie.
+    groep:Versie2020-08 skos:member ?FysiekObjectURI ;
+            rdfs:label ?Versie .
+}
+ORDER BY str(?FysiekObjectLabel)	

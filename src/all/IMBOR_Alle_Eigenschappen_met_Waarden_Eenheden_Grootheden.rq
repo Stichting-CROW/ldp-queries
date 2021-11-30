@@ -1,0 +1,49 @@
+# CROW-IMBOR (2020-08)
+# Geef me alle eigenschappen met vastewaardelijsten en/of met eenheden en/of grootheden
+# Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/select
+
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX nta8035: <https://w3id.org/def/basicsemantics-owl#>
+PREFIX groep: <http://linkeddata.crow.nl/publication-v2/ns/crow/imbor/def/groepering/>
+
+SELECT ?EigenschapURI ?EigenschapLabel ?EigenschapDefinitie ?VastewaardeLijstURI ?VastewaardeLijstLabel ?VastewaardeURI ?VastewaardeLabel ?Datatype ?Eenheid ?Grootheid ?Versie
+WHERE {
+
+# Selecteer alle SHACL property shapes ... 
+    	?SHACLPropertyShape a sh:PropertyShape .
+# ... met een relatie naar een eigenschap (inclusief via de blanknodes)...
+        { ?SHACLPropertyShape sh:path/(rdf:first) ?EigenschapURI .}
+UNION   { ?SHACLPropertyShape sh:path ?EigenschapURI .}
+        ?EigenschapURI skos:prefLabel ?EigenschapLabel .
+OPTIONAL {  	?EigenschapURI skos:definition ?EigenschapDefinitie .
+    		}
+
+# ... en die voorkomen in deze versie ...
+    groep:Versie2020-08 skos:member ?SHACLPropertyShape ;
+            rdfs:label ?Versie .
+
+# ... en laat dan waar mogelijk de vastewaardelijsten zien, met hun waarden ...
+OPTIONAL {   ?SHACLPropertyShape sh:class ?VastewaardeLijstURI .
+					?VastewaardeLijstURI skos:prefLabel ?VastewaardeLijstLabel .
+					?VastewaardeURI a ?VastewaardeLijstURI .
+    				?VastewaardeURI skos:prefLabel ?VastewaardeLabel .
+   		 }
+
+# ... en laat dan waar mogelijk de datatypes zien ...
+OPTIONAL {
+    	?SHACLPropertyShape sh:datatype ?Datatype .
+        }
+
+# ... en laat dan waar mogelijk de eenheden zien ...
+OPTIONAL {   ?EigenschapURI nta8035:unit ?Eenheid .
+                          
+		 }
+# ... en laat dan waar mogelijk de grootheden zien.
+OPTIONAL {   ?EigenschapURI nta8035:quantityKind ?Grootheid .
+                          
+		 }	
+} 
+
+ORDER BY str(?EigenschapLabel) str(?VastewaardeLabel) ?VastewaardeLijstLabel str(?Eenheid) str(?Grootheid)

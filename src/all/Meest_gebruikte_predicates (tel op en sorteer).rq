@@ -1,0 +1,7 @@
+# Overzicht predicates (properties, relaties): gesorteerd naar aantal voorkomens
+
+SELECT (COUNT(*) AS ?count) ?predicate
+WHERE {?subject ?predicate ?object}
+GROUP BY ?predicate
+ORDER BY DESC (?count)
+

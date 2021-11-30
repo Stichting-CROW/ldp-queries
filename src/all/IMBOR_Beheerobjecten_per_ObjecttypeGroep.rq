@@ -1,0 +1,28 @@
+# CROW-IMBOR (2020-08)
+# Geef me een lijst met alle Beheerobjecten binnen een ObjecttypeGroep [filNam]
+# Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX groep: <http://linkeddata.crow.nl/publication-v2/ns/crow/imbor/def/groepering/>
+
+SELECT ?ObjecttypeGroepURI ?ObjecttypeGroepLabel ?FysiekObjectURI ?FysiekObjectLabel ?FysiekObjectDefinitie ?Versie
+WHERE {
+# Selecteer de ObjecttypenGroepen ...
+    groep:Objecttypegroep skos:member ?ObjecttypeGroepURI .
+	?ObjecttypeGroepURI skos:prefLabel ?ObjecttypeGroepLabel .
+       	
+# ... en laat de members van die groep zien.                          
+		?ObjecttypeGroepURI	skos:member ?FysiekObjectURI .
+    	?FysiekObjectURI skos:prefLabel ?FysiekObjectLabel .
+
+# Filter op Objectnaam ...
+    FILTER (CONTAINS(LCASE(?FysiekObjectLabel), "{{&filNam}}"))
+        OPTIONAL{ ?FysiekObjectURI skos:definition ?FysiekObjectDefinitie }.
+        FILTER regex(str(?FysiekObjectURI), "crow/imbor").
+
+# ... en die voorkomen in deze versie.
+    	groep:Versie2020-08 skos:member ?FysiekObjectURI ;
+        rdfs:label ?Versie .
+}
+ORDER BY str(?ObjecttypeGroepLabel) str(?FysiekObjectLabel)	
