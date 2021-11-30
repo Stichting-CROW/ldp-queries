@@ -1,0 +1,22 @@
+title: Copy all queries from subdirs/ to all/
+
+on: push
+  
+jobs:
+  copy_to_all:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Copy files
+        shell: bash
+        run: |
+          find src/ -name "*.rq" -not -path "src/all/**" -exec cp {} src/all \;
+
+      - name: Commit changes
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Update src/all queries"
+          git push

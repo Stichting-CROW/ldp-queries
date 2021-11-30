@@ -2,5 +2,7 @@
 
 - `imo`: IMBOR
 - `raw`: PCB, RAW
+- `public`: Niet-publicatiespecifieke SPARQL-queries
+- `all`: [Genereerd][yaml]: alle queries bijeen gekopieerd.
 
-Niet-publicatiespecifieke SPARQL-queries zijn niet in een losse map opgeslagen.
+[yaml]: ../.github/workflows/copy-to-all.yaml
