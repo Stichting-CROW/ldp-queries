@@ -1,4 +1,4 @@
-title: Copy all queries from subdirs/ to all/
+name: Copy all queries from subdirs/ to all/
 
 on: push
   
