@@ -5,42 +5,59 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX pnhspec: <http://otl.noord-holland.nl/era/specificatie/>
-select ?procesEisId ?eisNaam ?eisTekst ?aandachtsPunt ?procesId ?procesNaam ?bovenliggendProces ?bovenLiggendProcesNaam 
-where { {
-    ?s a cspec:Specificatie .
-    ?s rdfs:label ?en .
-    ?s cspec:beschrijving ?et .
-    optional {
-        ?s pnhspec:aandachtspunt ?ap .
+
+select
+    ?procesEisId
+    ?eisNaam
+    ?eisTekst
+    ?aandachtsPunt
+    ?procesId
+    ?procesNaam
+    ?bovenliggendProces
+    ?bovenLiggendProcesNaam 
+where { 
+    {
+        ?s a cspec:Specificatie .
+        ?s rdfs:label ?en .
+        ?s cspec:beschrijving ?et .
+        optional {
+            ?s pnhspec:aandachtspunt ?ap .
+        }
+        
+        ?s cspec:specificeert ?p .
+        ?p cspec:naam ?pn .
+        optional {
+            ?bp cspec:heeftOnderliggende ?p .
+            ?bp cspec:naam ?bpn .
+        }
+        
+        bind(REPLACE(str(?s), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?procesEisId)
+        bind(REPLACE(str(?p), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?procesId)
+        bind(REPLACE(str(?bp), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?bovenliggendProces)
+        bind(REPLACE(str(?en), "@nl-NL", "", "i") as ?eisNaam)
+        bind(REPLACE(str(?et), "@nl-NL", "", "i") as ?eisTekst)
+        bind(REPLACE(str(?ap), "@nl-NL", "", "i") as ?aandachtsPunt)
+        bind(REPLACE(str(?pn), "@nl-NL", "", "i") as ?procesNaam)
+        bind(REPLACE(str(?bpn), "@nl-NL", "", "i") as ?bovenLiggendProcesNaam)
+        FILTER regex(str(?p), "/pnh/vs2/")
     }
-    ?s cspec:specificeert ?p .
-    ?p cspec:naam ?pn .
-    optional {?bp cspec:heeftOnderliggende ?p .
-        ?bp cspec:naam ?bpn .}
-    bind(REPLACE(str(?s), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?procesEisId)
-    bind(REPLACE(str(?p), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?procesId)
-    bind(REPLACE(str(?bp), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?bovenliggendProces)
-   bind(REPLACE(str(?en), "@nl-NL", "", "i") as ?eisNaam)
-    bind(REPLACE(str(?et), "@nl-NL", "", "i") as ?eisTekst)
-    bind(REPLACE(str(?ap), "@nl-NL", "", "i") as ?aandachtsPunt)
-    bind(REPLACE(str(?pn), "@nl-NL", "", "i") as ?procesNaam)
-    bind(REPLACE(str(?bpn), "@nl-NL", "", "i") as ?bovenLiggendProcesNaam)
-    FILTER regex(str(?p), "/pnh/vs2/")
-} union 
-{
-    ?p cspec:naam ?pn .
-    ?p a cspec:Activiteit .
-    optional { ?bp cspec:heeftOnderliggende ?p .
-        ?bp cspec:naam ?bpn . }
-    bind(REPLACE(str(?p), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?procesId)
-    bind(REPLACE(str(?bp), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?bovenliggendProces)
-    bind(REPLACE(str(?pn), "@nl-NL", "", "i") as ?procesNaam)
-    bind(REPLACE(str(?bpn), "@nl-NL", "", "i") as ?bovenLiggendProcesNaam)
-    FILTER NOT EXISTS {?s cspec:specificeert ?p }
-    FILTER regex(str(?p), "/pnh/vs2/")
-}}
-order by ?bovenliggendProces ?procesId  
-
-
-
-
+    union
+    {
+        ?p cspec:naam ?pn .
+        ?p a cspec:Activiteit .
+        optional {
+            ?bp cspec:heeftOnderliggende ?p .
+            ?bp cspec:naam ?bpn .
+        }
+        
+        bind(REPLACE(str(?p), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?procesId)
+        bind(REPLACE(str(?bp), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?bovenliggendProces)
+        bind(REPLACE(str(?pn), "@nl-NL", "", "i") as ?procesNaam)
+        bind(REPLACE(str(?bpn), "@nl-NL", "", "i") as ?bovenLiggendProcesNaam)
+        FILTER NOT EXISTS {?s cspec:specificeert ?p }
+        FILTER regex(str(?p), "/pnh/vs2/")
+    }
+}
+order by
+    ?bovenliggendProces
+    ?procesId  
