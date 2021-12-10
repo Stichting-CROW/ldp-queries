@@ -1,6 +1,5 @@
 # CROW-IMBOR (2020-08)
 # Geef me alle Eigenschappen van een Beheerobject [filNam] (inclusief overerving) 
-# rdfs:subClassOf* werkt niet op het CROW LDP. Vandaar dat we deze manuele UNION moeten uitvoeren.
 # Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/
 
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -9,7 +8,7 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX groep: <http://linkeddata.crow.nl/publication-v2/ns/crow/imbor/def/groepering/>
 
-SELECT ?FysiekObjectURI ?FysiekObjectLabel ?EigenschapURI ?EigenschapLabel ?EigenschapVanObjectLabel ?Versie
+SELECT DISTINCT ?FysiekObjectURI ?FysiekObjectLabel ?EigenschapURI ?EigenschapLabel ?EigenschapVanObjectLabel ?Versie
 
 WHERE {
 
@@ -27,65 +26,9 @@ WHERE {
             FILTER (LCASE(str(?preflabel)) = "{{&filNam}}") # heel woord
             #FILTER (CONTAINS(?preflabel, "{{&filNam}}")) # gedeelte
             BIND (?preflabel AS ?FysiekObjectLabel)
-            
-# Trek het property-path uit elkaar om de superklasse te laten zien en gebruik de "UNION" hack om de property path bug in het CROW LDP te omzeilen.
-# rdfs:subClassOf* werkt niet op het CROW LDP. Vandaar dat we deze manuele UNION moeten uitvoeren.
+
             {
-              ?FysiekObjectURI rdfs:subClassOf [
-                  rdfs:subClassOf [
-                    rdfs:subClassOf [
-                      rdfs:subClassOf [
-                        rdfs:subClassOf [
-                          rdfs:subClassOf [
-                            rdfs:subClassOf ?SuperKlasse
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ] .
-            } UNION {
-              ?FysiekObjectURI rdfs:subClassOf [
-                  rdfs:subClassOf [
-                    rdfs:subClassOf [
-                      rdfs:subClassOf [
-                        rdfs:subClassOf [
-                          rdfs:subClassOf ?SuperKlasse
-                        ]
-                      ]
-                    ]
-                  ]
-                ] .
-            } UNION {
-              ?FysiekObjectURI rdfs:subClassOf [
-                  rdfs:subClassOf [
-                    rdfs:subClassOf [
-                      rdfs:subClassOf [
-                        rdfs:subClassOf ?SuperKlasse
-                      ]
-                    ]
-                  ]
-                ] .
-            } UNION {
-              ?FysiekObjectURI rdfs:subClassOf [
-                  rdfs:subClassOf [
-                    rdfs:subClassOf [
-                      rdfs:subClassOf ?SuperKlasse
-                    ]
-                  ]
-                ] .
-            } UNION {
-              ?FysiekObjectURI rdfs:subClassOf [
-                  rdfs:subClassOf [
-                    rdfs:subClassOf ?SuperKlasse
-                  ]
-                ] .
-            } UNION {
-              ?FysiekObjectURI rdfs:subClassOf [
-                  rdfs:subClassOf ?SuperKlasse 
-                ] .
-            } UNION {
-              ?FysiekObjectURI rdfs:subClassOf ?SuperKlasse .
+              ?FysiekObjectURI rdfs:subClassOf* ?SuperKlasse .
             } UNION {
               ?SuperKlasse skos:prefLabel ?FysiekObjectLabel .
             }
