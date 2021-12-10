@@ -1,4 +1,4 @@
-# Geef me alle cspec:Specificatie die beschikbaar zijn binnen de collectieve PCB sets en filter op PCB discipline
+# Geef me alle cspec:Specificatie die beschikbaar zijn binnen de collectieve PCB sets en filter [fildis] op PCB discipline
 
 PREFIX cspec: <http://ontologie.crow.nl/bibliotheekspecificatie/201711/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
