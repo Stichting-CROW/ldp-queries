@@ -11,7 +11,7 @@ where {
     ?onderwerpURI rdf:type ?onderwerpType ;
                   cspec:naam ?onderwerpNaam .
 
-    FILTER (CONTAINS(LCASE(?onderwerpURI), "{{&filDis}}"))
+    FILTER (CONTAINS(LCASE(str(?onderwerpURI)), LCASE("{{&filDis}}")))
 
   	OPTIONAL {?onderwerpURI cspec:code ?onderwerpCode }.
     
