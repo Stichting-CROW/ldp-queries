@@ -8,7 +8,7 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX groep: <http://linkeddata.crow.nl/publication-v2/ns/crow/imbor/def/groepering/>
 
-SELECT ?FysiekObjectURI ?FysiekObjectLabel ?EigenschapURI ?EigenschapLabel ?EigenschapVanObjectLabel ?Versie
+SELECT DISTINCT ?FysiekObjectURI ?FysiekObjectLabel ?EigenschapURI ?EigenschapLabel ?EigenschapVanObjectLabel ?Versie
 
 WHERE {
 
