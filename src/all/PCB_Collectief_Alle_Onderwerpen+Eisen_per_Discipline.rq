@@ -1,0 +1,13 @@
+# Geef me alle cspec:Activiteit, cspec:Object en cspec:Functie die beschikbaar zijn binnen de collectieve PCB sets en hun gekoppelde eisen en filter op PCB discipline.
+
+PREFIX cspec: <http://ontologie.crow.nl/bibliotheekspecificatie/201711/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX cdoc: <http://ontologie.crow.nl/document/201711/>
+
+select ?onderwerpURI ?eisURI
+where {      
+    ?eisURI cspec:specificeert ?onderwerpURI .
+
+    FILTER (CONTAINS(LCASE(?onderwerpURI), "{{&fildis}}"))
+}

@@ -1,0 +1,29 @@
+# Geef me alle cspec:Specificatie die beschikbaar zijn binnen de collectieve PCB sets
+
+PREFIX cspec: <http://ontologie.crow.nl/bibliotheekspecificatie/201711/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX cdoc: <http://ontologie.crow.nl/document/201711/>
+
+select ?eisURI ?eisCode ?eisNaam ?eisTekst ?eisBron ?methodeURI ?methodeNaam ?collectieNaam ?datasetNaam
+where { 
+    ?eisURI a 	cspec:Specificatie ;
+                cspec:naam ?eisNaam ;
+            	cspec:beschrijving ?eisTekst ;
+
+    FILTER regex(str(?eisURI), "/ns/PCB")
+
+    OPTIONAL {?eisURI cspec:code ?eisCode }.
+   
+    OPTIONAL {?eisURI cdoc:heeftBron ?bronURI .
+    		  ?bronURI cdoc:naam ?eisBron .}
+  
+    OPTIONAL {?eisURI cspec:heeftVerificatiemethode ?methodeURI .
+    			?methodeURI cspec:naam ?methodeNaam . } 
+  
+    OPTIONAL {?eisURI cspec:isLidVan ?collectieURI .
+    		  ?collectieURI cspec:naam ?collectieNaam .}
+    OPTIONAL {?eisURI cspec:hoortBijDataset ?datasetURI .
+              ?datasetURI cspec:naam ?datasetNaam .}
+           
+}
