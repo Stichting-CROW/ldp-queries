@@ -25,66 +25,8 @@ WHERE {
 
             BIND (?preflabel AS ?FysiekObjectLabel)
             
-# Trek het property-path uit elkaar om de superklasse te laten zien.
-#<--DIT STUK WORDT VERVANGEN-->#
-#            ?FysiekObjectURI rdfs:subClassOf* ?SuperKlasse .
-#<--DOOR ONDERSTAANDE STUK-->            
-	{
-              ?FysiekObjectURI rdfs:subClassOf [
-                  rdfs:subClassOf [
-                    rdfs:subClassOf [
-                      rdfs:subClassOf [
-                        rdfs:subClassOf [
-                          rdfs:subClassOf [
-                            rdfs:subClassOf ?SuperKlasse
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ] .
-            } UNION {
-              ?FysiekObjectURI rdfs:subClassOf [
-                  rdfs:subClassOf [
-                    rdfs:subClassOf [
-                      rdfs:subClassOf [
-                        rdfs:subClassOf [
-                          rdfs:subClassOf ?SuperKlasse
-                        ]
-                      ]
-                    ]
-                  ]
-                ] .
-            } UNION {
-              ?FysiekObjectURI rdfs:subClassOf [
-                  rdfs:subClassOf [
-                    rdfs:subClassOf [
-                      rdfs:subClassOf [
-                        rdfs:subClassOf ?SuperKlasse
-                      ]
-                    ]
-                  ]
-                ] .
-            } UNION {
-              ?FysiekObjectURI rdfs:subClassOf [
-                  rdfs:subClassOf [
-                    rdfs:subClassOf [
-                      rdfs:subClassOf ?SuperKlasse
-                    ]
-                  ]
-                ] .
-            } UNION {
-              ?FysiekObjectURI rdfs:subClassOf [
-                  rdfs:subClassOf [
-                    rdfs:subClassOf ?SuperKlasse
-                  ]
-                ] .
-            } UNION {
-              ?FysiekObjectURI rdfs:subClassOf [
-                  rdfs:subClassOf ?SuperKlasse 
-                ] .
-            } UNION {
-              ?FysiekObjectURI rdfs:subClassOf ?SuperKlasse .
+          	{
+              ?FysiekObjectURI rdfs:subClassOf* ?SuperKlasse .
             } UNION {
               ?SuperKlasse skos:prefLabel ?FysiekObjectLabel .
             }		

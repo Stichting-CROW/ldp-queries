@@ -11,6 +11,7 @@ jobs:
       - name: Copy files
         shell: bash
         run: |
+          rm -f src/all/*.rq
           find src/ -name "*.rq" -not -path "src/all/**" -exec cp {} src/all \;
 
       - name: Commit changes
