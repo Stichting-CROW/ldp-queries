@@ -1,6 +1,5 @@
+# Deprecated
 # Onderdeel A van de spreadsheet export van IMBOR-LD
-# DIT IS DE VERSIE DIE MANUELE INFERENCING DOET. OMDAT OP HET CROW LDP GEEN INFERENCING WERKT. 
-# Op alle andere systemen werkt de standaard query. Alleen op het CROW LDP wordt onderstaande gebruikt.
 # CROW-IMBOR (2020-08)
 # Geef me alle ObjectTypen en Alle Eigenschappen (inclusief over geerfde) 
 # Getest tegen: http://linkeddata.crow.nl/publication-v2/contexts/cpc/
