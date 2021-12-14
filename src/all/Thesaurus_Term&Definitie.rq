@@ -1,0 +1,20 @@
+# Geef me een term [filNam] en laat de URI en definitie zien.
+# In de CROW Thesaurus zit nog meer informatie zoals collectie en broader/narrower. Deze worden hier niet getoond.
+
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix thes: <https://data.crow.nl/thesaurus/term/>
+
+select ?termURI ?termLabel ?termDefinitie
+
+where { 
+	?termURI rdf:type skos:Concept .
+    ?termURI skos:prefLabel ?termLabel .
+
+    OPTIONAL {?termURI skos:definition ?termDefinitie . }
+
+    FILTER (CONTAINS(LCASE(str(?termLabel)), LCASE("{{&filNam}}")))
+
+} 
+
+ORDER BY str(?termLabel)
