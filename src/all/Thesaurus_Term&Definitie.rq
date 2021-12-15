@@ -13,7 +13,7 @@ where {
 
     OPTIONAL {?termURI skos:definition ?termDefinitie . }
 
-    FILTER (CONTAINS(LCASE(str(?termLabel)), LCASE("{{&filnam}}")))
+    FILTER (CONTAINS(LCASE(str(?termLabel)), LCASE("{{&filNam}}")))
 
 } 
 

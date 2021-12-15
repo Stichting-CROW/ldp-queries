@@ -11,10 +11,26 @@ jobs:
       - name: Copy files
         shell: bash
         run: |
+          # Remove all SPARQL query files from `src/all`
           rm -f src/all/*.rq
-          find src/ -name "*.rq" -not -path "src/all/**" -exec cp {} src/all \;
 
-      - name: Commit changes
+          # Copy all SPARQL query files in `src/` to `src/all`, except those already in `src/all`
+          find src/ -name "*.rq" -not -path "src/all/**" -exec cp {} src/all \;
+        
+          # Ensure that no SPARQL files have the same name
+          # Count SPARQL files in `src/all`
+          NUM_FILES_ALL=`find src/all/ -name "*.rq" | wc -l`
+          # Count SPARQL files in `src/`, except those in `src/all`. 
+          NUM_FILES_ELSE=`find src/ -name "*.rq" -not -path "src/all/**" | wc -l`
+
+          if [[ $NUM_FILES_ALL != $NUM_FILES_ELSE ]]; then
+            echo "The number of '.rq'-files in 'src/all' does not match the sum of those in 'src/'."
+            echo "Please check that no '.rq'-files have identical names."
+            exit 1
+          fi
+
+
+      - name: Commit changes to src/all
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
