@@ -24,7 +24,7 @@ WHERE
 			skos:prefLabel ?ObjNaam ; # De typenaam van het object
 			dc:identifier ?ObjCod ; # De type-code van het object
 	.
-	{{&filObj}}
+	{{&filNam}}
 	
 	?VerId
 			skos:prefLabel ?VerNaam ; # De verificatie-naam
