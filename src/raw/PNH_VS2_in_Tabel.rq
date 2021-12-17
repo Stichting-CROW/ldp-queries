@@ -10,6 +10,7 @@ select
     ?procesEisId
     ?eisNaam
     ?eisTekst
+    ?karakter
     ?aandachtsPunt
     ?procesId
     ?procesNaam
@@ -23,7 +24,9 @@ where {
         optional {
             ?s pnhspec:aandachtspunt ?ap .
         }
-        
+        optional {
+            ?s pnhspec:karakter ?k .
+        }
         ?s cspec:specificeert ?p .
         ?p cspec:naam ?pn .
         optional {
@@ -37,6 +40,7 @@ where {
         bind(REPLACE(str(?en), "@nl-NL", "", "i") as ?eisNaam)
         bind(REPLACE(str(?et), "@nl-NL", "", "i") as ?eisTekst)
         bind(REPLACE(str(?ap), "@nl-NL", "", "i") as ?aandachtsPunt)
+        bind(REPLACE(str(?k), "@nl-NL", "", "i") as ?karakter)
         bind(REPLACE(str(?pn), "@nl-NL", "", "i") as ?procesNaam)
         bind(REPLACE(str(?bpn), "@nl-NL", "", "i") as ?bovenLiggendProcesNaam)
         FILTER regex(str(?p), "/pnh/vs2/")
