@@ -2,9 +2,8 @@
 
 PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#>
 PREFIX rdf: 	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX dc:		<http://purl.org/dc/terms/>
-PREFIX crow:	<http://www.crowprocontractdata.nl/ns/crow/2015/05/specificatie-schema/>
-# PREFIX utrecht: <http://linkeddata.crow.nl/publication/ns/utrecht/2016/11/04/specs/>
+PREFIX dc:	<http://purl.org/dc/terms/>
+PREFIX crow:	<http://ontologie.crow.nl/bibliotheekspecificatie/201711/>
 
 SELECT DISTINCT ?EisId ?EisNaam ?EisTekst ?ObjNaam ?ObjCod ?VerNaam ?MethNaam
 WHERE
