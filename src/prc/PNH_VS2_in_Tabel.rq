@@ -14,6 +14,7 @@ select
     ?aandachtsPunt
     ?procesId
     ?procesNaam
+    ?procesCode
     ?bovenliggendProces
     ?bovenLiggendProcesNaam 
 where { 
@@ -53,10 +54,14 @@ where {
             ?bp cspec:heeftOnderliggende ?p .
             ?bp cspec:naam ?bpn .
         }
+        optional {
+            ?p cspec:code ?pc
+        }
         
         bind(REPLACE(str(?p), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?procesId)
         bind(REPLACE(str(?bp), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?bovenliggendProces)
         bind(REPLACE(str(?pn), "@nl-NL", "", "i") as ?procesNaam)
+        bind(?pc AS ?procesCode)
         bind(REPLACE(str(?bpn), "@nl-NL", "", "i") as ?bovenLiggendProcesNaam)
         FILTER NOT EXISTS {?s cspec:specificeert ?p }
         FILTER regex(str(?p), "/pnh/vs2/")
