@@ -16,9 +16,9 @@ WHERE {
                     		sh:property ?uriShapeSupertype .
     		?uriShapeSupertype sh:path ?uriRelatie .
   			FILTER(LANG(?labelRelatieVanObject)="nl") 
-    		FILTER(CONTAINS(STR(?uriRelatie),"nen2660"))
+    		FILTER(STRSTARTS(STR(?uriRelatie), STR(nen2660:)))
 
-    # Vraag voor elk supertype de klasse op waar de relatie naar linkt    
+# Vraag voor elk supertype de klasse op waar de relatie naar linkt    
     		?uriShapeSupertype sh:qualifiedValueShape ?blankNode1 .
     		?blankNode1 sh:class ?uriConceptB .
 
@@ -27,7 +27,13 @@ WHERE {
     OPTIONAL {?uriShapeSupertype sh:qualifiedMaxCount ?qshapeMaxCount} .
 # Presenteer de multipliciteit informatie op een overzichtelijk manier in één kolom.
     BIND (CONCAT(IF(BOUND(?qshapeMinCount),STR(?qshapeMinCount),"0"),":",IF(BOUND(?qshapeMaxCount),STR(?qshapeMaxCount),"n")) AS ?labelMultipliciteit) 
-    
+
+# Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022" en in de "IMBOR Kern" zitten.
+# (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
+    coll:IMBOR restapi:hasMember ?uriConceptA .
+    coll:IMBOR-versie-2022 restapi:hasMember ?uriConceptA .
+    imbor: restapi:hasMember ?uriConceptA .
+        
 # Selecteer Label waar aanwezig. 
     OPTIONAL{?uriConceptA skos:prefLabel ?labelConceptA}
     OPTIONAL{?uriShapeSupertype skos:prefLabel ?labelShape} 

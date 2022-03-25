@@ -34,9 +34,9 @@ WHERE {
     OPTIONAL {?uriShape nen2660:hasUnit ?uriEenheid} .
     OPTIONAL {?uriShape sh:datatype ?uriDatatype} .
     OPTIONAL {?uriAttribuut nen2660:hasQuantityKind ?uriGrootheid} .
-    OPTIONAL{?uriShape sh:qualifiedValueShape/sh:class ?uriEnumeratie .
+    OPTIONAL {?uriShape sh:qualifiedValueShape/sh:class ?uriEnumeratie .
        		 ?uriEnumeratie skos:prefLabel ?labelEnumeratie .
-    		}
+    		 }
 
 # Presenteer de multipliciteit informatie op een overzichtelijk manier in één kolom.
     BIND (COALESCE(?shapeMinCount, ?qshapeMinCount) AS ?minC)
@@ -44,7 +44,7 @@ WHERE {
     BIND (CONCAT(IF(BOUND(?minC),STR(?minC),"0"),":",IF(BOUND(?maxC),STR(?maxC),"n")) AS ?labelMultipliciteit) 
 
 # Filter NEN2660 relaties er uit (zodat echt alleen 'Attributen' overblijven en geen SemantischeRelaties)
-    FILTER(!CONTAINS(STR(?uriAttribuut),"nen2660"))
+    FILTER (!STRSTARTS(STR(?uriAttribuut), STR(nen2660:)))
 
 # Selecteer Label, Synoniem, Definitie, Toelichting waar aanwezig. 
     OPTIONAL{?uriConcept skos:prefLabel ?labelConcept}
