@@ -54,7 +54,7 @@ WHERE {
     BIND (CONCAT(IF(BOUND(?minC),STR(?minC),"0"),":",IF(BOUND(?maxC),STR(?maxC),"n")) AS ?labelMultipliciteit) 
 
 # Filter NEN2660 relaties er uit (zodat echt alleen 'Attributen' overblijven en geen SemantischeRelaties)
-    FILTER(!CONTAINS(STR(?uriAttribuut),"nen2660"))
+    FILTER ( !STRSTARTS( STR(?uriAttribuut), STR(nen2660:) ) )
 
 # Selecteer Label, Synoniem, Definitie, Toelichting waar aanwezig. 
     BIND (?labelURI AS ?labelConcept)
