@@ -34,8 +34,7 @@ WHERE {
     OPTIONAL {?uriShape nen2660:hasUnit ?uriEenheid} .
     OPTIONAL {?uriShape sh:datatype ?uriDatatype} .
     OPTIONAL {?uriAttribuut nen2660:hasQuantityKind ?uriGrootheid} .
-    OPTIONAL{?uriShape sh:qualifiedValueShape ?blankNode1 .
-    		 ?blankNode1 sh:class ?uriEnumeratie .
+    OPTIONAL{?uriShape sh:qualifiedValueShape/sh:class ?uriEnumeratie .
        		 ?uriEnumeratie skos:prefLabel ?labelEnumeratie .
     		}
 
