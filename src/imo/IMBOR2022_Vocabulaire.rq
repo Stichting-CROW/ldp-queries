@@ -1,0 +1,32 @@
+# Alle inhoud van de vocabulaire (term per collectie)
+
+PREFIX imbor: <https://data.crow.nl/imbor/def/>
+PREFIX imbor-term: <https://data.crow.nl/imbor/term/> 
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX coll: <https://data.crow.nl/rest-api/id#>
+PREFIX restapi: <https://data.crow.nl/rest-api/def#>
+
+SELECT ?uriTerm ?labelTerm ?synoniemTerm ?definitieTerm ?toelichtingTerm ?uriCollectie ?labelCollectie
+
+WHERE { 
+
+# Selecteer alle SKOS concepten en zoek de collecties daarbij. 
+	?uriTerm a skos:Concept .
+    ?uriCollectie skos:member ?uriTerm .
+
+# Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022" en in de "IMBOR Vocabulaire" zitten.
+# (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
+    coll:IMBOR restapi:hasMember ?uriTerm .
+    coll:IMBOR-versie-2022 restapi:hasMember ?uriTerm .
+    imbor-term: restapi:hasMember ?uriTerm .
+
+# Selecteer Label, Synoniem, Definitie, Toelichting waar aanwezig. 
+    OPTIONAL{?uriTerm skos:prefLabel ?labelTerm}
+    OPTIONAL{?uriTerm skos:altLabel ?synoniemTerm}
+    OPTIONAL{?uriTerm skos:definition ?definitieTerm}
+    OPTIONAL{?uriTerm skos:note ?toelichtingTerm}
+    OPTIONAL{?uriCollectie skos:prefLabel ?labelCollectie}
+  
+} 
+ORDER BY STR(?labelCollectie) STR(?labelTerm) 
