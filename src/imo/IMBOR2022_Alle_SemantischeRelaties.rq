@@ -15,12 +15,11 @@ WHERE {
     		?uriSupertype skos:prefLabel ?labelRelatieVanObject ;
                     		sh:property ?uriShapeSupertype .
     		?uriShapeSupertype sh:path ?uriRelatie .
-  			FILTER(LANG(?labelRelatieVanObject)="nl") 
+  			FILTER(LangMatches(LANG(?labelRelatieVanObject), "nl")) .
     		FILTER(STRSTARTS(STR(?uriRelatie), STR(nen2660:)))
 
 # Vraag voor elk supertype de klasse op waar de relatie naar linkt    
-    		?uriShapeSupertype sh:qualifiedValueShape ?blankNode1 .
-    		?blankNode1 sh:class ?uriConceptB .
+    		?uriShapeSupertype sh:qualifiedValueShape/sh:class ?uriConceptB .
 
 # ... en laat optioneel zien of er extra informatie over de koppeling is.
     OPTIONAL {?uriShapeSupertype sh:qualifiedMinCount ?qshapeMinCount} .
