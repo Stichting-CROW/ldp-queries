@@ -24,7 +24,7 @@ WHERE {
             ?uriConcept rdfs:subClassOf* ?uriSupertype .
     		?uriSupertype skos:prefLabel ?labelAttribuutVanObject ;
                     		sh:property ?uriShapeSupertype .
-  			FILTER(LANG(?labelAttribuutVanObject)="nl") .
+  			FILTER(LangMatches(LANG(?labelAttribuutVanObject), "nl")) .
     
 # Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022" en in de "IMBOR Kern" zitten.
 # (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
@@ -43,10 +43,9 @@ WHERE {
     OPTIONAL {?uriShapeSupertype nen2660:hasUnit ?uriEenheid} .
     OPTIONAL {?uriShapeSupertype sh:datatype ?uriDatatype} .
     OPTIONAL {?uriAttribuut nen2660:hasQuantityKind ?uriGrootheid} .
-    OPTIONAL{?uriShapeSupertype sh:qualifiedValueShape ?blankNode1 .
-    		 ?blankNode1 sh:class ?uriEnumeratie .
-       		 ?uriEnumeratie skos:prefLabel ?labelEnumeratie .
-    		} 
+    OPTIONAL {?uriShapeSupertype sh:qualifiedValueShape/sh:class ?uriEnumeratie .
+    ?uriEnumeratie skos:prefLabel ?labelEnumeratie .
+             } 
 
 # Presenteer de multipliciteit informatie op een overzichtelijk manier in één kolom.
     BIND (COALESCE(?shapeMinCount, ?qshapeMinCount) AS ?minC)
@@ -54,7 +53,7 @@ WHERE {
     BIND (CONCAT(IF(BOUND(?minC),STR(?minC),"0"),":",IF(BOUND(?maxC),STR(?maxC),"n")) AS ?labelMultipliciteit) 
 
 # Filter NEN2660 relaties er uit (zodat echt alleen 'Attributen' overblijven en geen SemantischeRelaties)
-    FILTER ( !STRSTARTS( STR(?uriAttribuut), STR(nen2660:) ) )
+    FILTER(!CONTAINS(STR(?uriAttribuut),"nen2660"))
 
 # Selecteer Label, Synoniem, Definitie, Toelichting waar aanwezig. 
     BIND (?labelURI AS ?labelConcept)
