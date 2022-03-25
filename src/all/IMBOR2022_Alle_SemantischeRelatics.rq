@@ -1,0 +1,38 @@
+# Alle semantische relaties voor concept A (inclusief de overgeërfde) en hun doel (concept B)
+
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX nen2660: <https://w3id.org/nen2660/def#>
+PREFIX imbor: <https://data.crow.nl/imbor/def/>
+
+SELECT ?uriConceptA ?labelConceptA ?uriRelatie ?labelRelatie ?labelRelatieVanObject ?labelMultipliciteit ?uriConceptB ?labelConceptB
+
+WHERE { 
+
+# Selecteer alle concepten en hun supertype die een sh:path hebben waarin "nen2660" voorkomen.
+	        ?uriConceptA rdfs:subClassOf* ?uriSupertype .
+    		?uriSupertype skos:prefLabel ?labelRelatieVanObject ;
+                    		sh:property ?uriShapeSupertype .
+    		?uriShapeSupertype sh:path ?uriRelatie .
+  			FILTER(LANG(?labelRelatieVanObject)="nl") 
+    		FILTER(CONTAINS(STR(?uriRelatie),"nen2660"))
+
+    # Vraag voor elk supertype de klasse op waar de relatie naar linkt    
+    		?uriShapeSupertype sh:qualifiedValueShape ?blankNode1 .
+    		?blankNode1 sh:class ?uriConceptB .
+
+# ... en laat optioneel zien of er extra informatie over de koppeling is.
+    OPTIONAL {?uriShapeSupertype sh:qualifiedMinCount ?qshapeMinCount} .
+    OPTIONAL {?uriShapeSupertype sh:qualifiedMaxCount ?qshapeMaxCount} .
+# Presenteer de multipliciteit informatie op een overzichtelijk manier in één kolom.
+    BIND (CONCAT(IF(BOUND(?qshapeMinCount),STR(?qshapeMinCount),"0"),":",IF(BOUND(?qshapeMaxCount),STR(?qshapeMaxCount),"n")) AS ?labelMultipliciteit) 
+    
+# Selecteer Label waar aanwezig. 
+    OPTIONAL{?uriConceptA skos:prefLabel ?labelConceptA}
+    OPTIONAL{?uriShapeSupertype skos:prefLabel ?labelShape} 
+	OPTIONAL{?uriShapeSupertype skos:prefLabel ?labelRelatie }
+    OPTIONAL{?uriConceptB skos:prefLabel ?labelConceptB}
+} 
+
+ORDER BY STR(?labelConceptA) STR(?labelRelatie) STR(?labelRelatieVanObject) STR(?labelConceptB)

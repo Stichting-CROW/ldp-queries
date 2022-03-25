@@ -1,0 +1,26 @@
+# Alle IMBOR concepten met een definitie in de IMBOR Vocabulair
+
+PREFIX coll: <https://data.crow.nl/rest-api/id#>
+PREFIX restapi: <https://data.crow.nl/rest-api/def#>
+PREFIX imbor: <https://data.crow.nl/imbor/def/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT DISTINCT ?uriConcept ?labelConcept ?labelCollectie ?uriTerm 
+
+WHERE { 
+# Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022".
+# (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
+    coll:IMBOR restapi:hasMember ?uriConcept .
+    coll:IMBOR-versie-2022 restapi:hasMember ?uriConcept .
+
+# Selecteer degene die een verwijzing hebben naar een begrip in de IMBOR Vocabulair en zoek daar de collectie ter categorisering bij.    
+    ?uriConcept rdfs:seeAlso ?uriTerm .
+    ?uriCollectie skos:member ?uriTerm ;
+                           skos:prefLabel ?labelCollectie .
+    
+# Selecteer Label waar aanwezig. 
+    OPTIONAL{?uriConcept skos:prefLabel ?labelConcept}
+
+} 
+ORDER BY STR(?labelCollectie) STR(?labelConcept)

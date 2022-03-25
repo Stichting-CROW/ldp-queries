@@ -1,0 +1,36 @@
+# ALle ObjectTypen met hun Vakdiscipline(n)
+
+PREFIX imbor: <https://data.crow.nl/imbor/def/>
+PREFIX imbor-term: <https://data.crow.nl/imbor/term/> 
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX coll: <https://data.crow.nl/rest-api/id#>
+PREFIX restapi: <https://data.crow.nl/rest-api/def#>
+PREFIX dash: <http://datashapes.org/dash#>
+
+SELECT ?uriConcept ?labelConcept ?definitieConcept ?toelichtingConcept ?uriVakdiscipline ?labelVakdiscipline ?definitieVakdiscipline
+
+WHERE { 
+
+# Selecteer alles klassen die NIET abstract zijn EN die lid zijn van een Vakdiscipline (dit zijn alleen ObjectTypen)
+	?uriConcept a rdfs:Class .
+    ?uriConcept dash:abstract false .
+    
+    ?uriVakdiscipline rdfs:member ?uriConcept .
+    ?uriVakdiscipline a rdfs:Container .
+
+# Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022" en in de "IMBOR Kern" zitten.
+# (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
+    coll:IMBOR restapi:hasMember ?uriConcept .
+    coll:IMBOR-versie-2022 restapi:hasMember ?uriConcept .
+    imbor: restapi:hasMember ?uriConcept .
+    
+# Selecteer Label, Synoniem, Definitie, Toelichting waar aanwezig. 
+    OPTIONAL{?uriConcept skos:prefLabel ?labelConcept}
+    OPTIONAL{?uriConcept skos:definition ?definitieConcept}
+    OPTIONAL{?uriConcept skos:note ?toelichtingConcept}
+    OPTIONAL{?uriVakdiscipline skos:prefLabel ?labelVakdiscipline}
+    OPTIONAL{?uriVakdiscipline skos:definition ?definitieVakdiscipline}
+  
+} 
+ORDER BY STR(?labelVakdiscipline) STR(?labelConcept) 
