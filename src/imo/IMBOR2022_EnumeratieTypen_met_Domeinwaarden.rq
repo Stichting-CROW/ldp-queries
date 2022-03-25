@@ -1,0 +1,37 @@
+# Alle EnumeratieTypen met hun Domeinwaarden
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX imbor: <https://data.crow.nl/imbor/def/>
+PREFIX imbor-domeinwaarde: <https://data.crow.nl/imbor/id/domeinwaarden/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX coll: <https://data.crow.nl/rest-api/id#>
+PREFIX restapi: <https://data.crow.nl/rest-api/def#>
+
+SELECT ?uriConcept ?uriType ?labelConcept ?definitieConcept ?toelichtingConcept ?uriDomeinwaarde ?labelDomeinwaarde ?definitieDomeinwaarde ?toelichtingDomeinwaarde ?labelBovenliggendeDomeinwaarde
+
+WHERE { 
+# Selecteer alle klassen die een 'typelijst' hebben...
+    	?uriConcept a rdfs:Class ;
+    	imbor:typeLijst ?uriType .
+
+# ... en selecteer alle domeinwaarden die bij die klassen horen en uit de IMBOR domeinwaarden graaf komen. En optioneel hun bovenliggende domeinwaarde.
+        ?uriDomeinwaarde a ?uriConcept .
+    	OPTIONAL{?uriDomeinwaarde imbor-domeinwaarde:bovenliggendeWaarde ?labelBovenliggendeDomeinwaarde}
+        imbor-domeinwaarde: restapi:hasMember ?uriDomeinwaarde .
+
+# Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022".
+# (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
+    coll:IMBOR restapi:hasMember ?uriConcept .
+    coll:IMBOR-versie-2022 restapi:hasMember ?uriConcept .
+    
+# Selecteer Label, Synoniem, Definitie, Toelichting waar aanwezig. 
+    OPTIONAL{?uriConcept skos:prefLabel ?labelConcept}
+    OPTIONAL{?uriConcept skos:definition ?definitieConcept}
+    OPTIONAL{?uriConcept skos:note ?toelichtingConcept}
+    OPTIONAL{?uriDomeinwaarde skos:prefLabel ?labelDomeinwaarde}
+	OPTIONAL{?uriDomeinwaarde skos:definition ?definitieDomeinwaarde}
+    OPTIONAL{?uriDomeinwaarde skos:note ?toelichtingDomeinwaarde}
+    
+} 
+
+ORDER BY STR(?labelConcept) STR(?labelDomeinwaarde)

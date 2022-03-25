@@ -1,0 +1,64 @@
+# Attributen per Klasse (parameter), inclusief de overgeërfde)
+
+PREFIX coll: <https://data.crow.nl/rest-api/id#>
+PREFIX restapi: <https://data.crow.nl/rest-api/def#>
+PREFIX imbor: <https://data.crow.nl/imbor/def/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dash: <http://datashapes.org/dash#>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX nen2660: <https://w3id.org/nen2660/def#>
+
+SELECT DISTINCT ?uriConcept ?labelConcept ?uriShapeSupertype ?labelShape ?labelMultipliciteit ?uriAttribuut ?labelAttribuut ?labelAttribuutVanObject ?uriDatatype ?uriEenheid ?uriGrootheid ?uriEnumeratie ?labelEnumeratie
+
+WHERE {
+
+# Selecteer alle klassen die prefLabel hebben... 
+    ?uriConcept a rdfs:Class ;
+             	  skos:prefLabel ?labelURI .
+            	
+# ... en filter op deze parameter
+			FILTER (LCASE(str(?labelURI)) = "{{&filNam}}") # heel woord
+            
+# Zoek van het geselecteerde concept alle supertypen die een een Nederlands preflabel hebben en gebonden zijn met een propertyshape. 
+            ?uriConcept rdfs:subClassOf* ?uriSupertype .
+    		?uriSupertype skos:prefLabel ?labelAttribuutVanObject ;
+                    		sh:property ?uriShapeSupertype .
+  			FILTER(LangMatches(LANG(?labelAttribuutVanObject), "nl")) .
+    
+# Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022" en in de "IMBOR Kern" zitten.
+# (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
+    coll:IMBOR restapi:hasMember ?uriConcept .
+    coll:IMBOR-versie-2022 restapi:hasMember ?uriConcept .
+    imbor: restapi:hasMember ?uriConcept .
+
+# Selecteer bij elke shape ("KlasseAttribuut") het Attribuut waar het betrekking op heeft ...
+    ?uriShapeSupertype sh:path ?uriAttribuut .
+    
+# ... en laat optioneel zien of er extra informatie over de koppeling is.
+    OPTIONAL {?uriShapeSupertype sh:minCount ?shapeMinCount} .
+    OPTIONAL {?uriShapeSupertype sh:qualifiedMinCount ?qshapeMinCount} .
+    OPTIONAL {?uriShapeSupertype sh:maxCount ?shapeMaxCount} .
+    OPTIONAL {?uriShapeSupertype sh:qualifiedMaxCount ?qshapeMaxCount} .
+    OPTIONAL {?uriShapeSupertype nen2660:hasUnit ?uriEenheid} .
+    OPTIONAL {?uriShapeSupertype sh:datatype ?uriDatatype} .
+    OPTIONAL {?uriAttribuut nen2660:hasQuantityKind ?uriGrootheid} .
+    OPTIONAL {?uriShapeSupertype sh:qualifiedValueShape/sh:class ?uriEnumeratie .
+                ?uriEnumeratie skos:prefLabel ?labelEnumeratie .
+             } 
+
+# Presenteer de multipliciteit informatie op een overzichtelijk manier in één kolom.
+    BIND (COALESCE(?shapeMinCount, ?qshapeMinCount) AS ?minC)
+    BIND (COALESCE(?shapeMaxCount, ?qshapeMaxCount) AS ?maxC)   
+    BIND (CONCAT(IF(BOUND(?minC),STR(?minC),"0"),":",IF(BOUND(?maxC),STR(?maxC),"n")) AS ?labelMultipliciteit) 
+
+# Filter NEN2660 relaties er uit (zodat echt alleen 'Attributen' overblijven en geen SemantischeRelaties)
+    FILTER (!STRSTARTS(STR(?uriAttribuut), STR(nen2660:)))
+
+# Selecteer Label, Synoniem, Definitie, Toelichting waar aanwezig. 
+    BIND (?labelURI AS ?labelConcept)
+    OPTIONAL{?uriAttribuut skos:prefLabel ?labelAttribuut}
+    OPTIONAL{?uriShapeSupertype skos:prefLabel ?labelShape}     
+} 
+
+ORDER BY STR(?labelConcept) STR(?labelAttribuut) STR(?labelAttribuutVanObject)
