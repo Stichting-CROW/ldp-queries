@@ -10,6 +10,11 @@ PREFIX restapi: <https://data.crow.nl/rest-api/def#>
 SELECT ?uriConcept ?uriType ?labelConcept ?definitieConcept ?toelichtingConcept ?uriDomeinwaarde ?labelDomeinwaarde ?definitieDomeinwaarde ?toelichtingDomeinwaarde ?labelBovenliggendeDomeinwaarde
 
 WHERE { 
+# Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022".
+# (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
+    coll:IMBOR restapi:hasMember ?uriConcept .
+    coll:IMBOR-versie-2022 restapi:hasMember ?uriConcept .
+
 # Selecteer alle klassen die een 'typelijst' hebben...
     	?uriConcept a rdfs:Class ;
     	imbor:typeLijst ?uriType .
@@ -18,12 +23,7 @@ WHERE {
         ?uriDomeinwaarde a ?uriConcept .
     	OPTIONAL{?uriDomeinwaarde imbor-domeinwaarde:bovenliggendeWaarde ?labelBovenliggendeDomeinwaarde}
         imbor-domeinwaarde: restapi:hasMember ?uriDomeinwaarde .
-
-# Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022".
-# (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
-    coll:IMBOR restapi:hasMember ?uriConcept .
-    coll:IMBOR-versie-2022 restapi:hasMember ?uriConcept .
-    
+   
 # Selecteer Label, Synoniem, Definitie, Toelichting waar aanwezig. 
     OPTIONAL{?uriConcept skos:prefLabel ?labelConcept}
     OPTIONAL{?uriConcept skos:definition ?definitieConcept}
