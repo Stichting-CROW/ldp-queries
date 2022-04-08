@@ -10,6 +10,12 @@ SELECT ?uriConceptA ?labelConceptA ?uriRelatie ?labelRelatie ?labelRelatieVanObj
 
 WHERE { 
 
+# Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022" en in de "IMBOR Kern" zitten.
+# (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
+    coll:IMBOR restapi:hasMember ?uriConceptA .
+    coll:IMBOR-versie-2022 restapi:hasMember ?uriConceptA .
+    imbor: restapi:hasMember ?uriConceptA .
+    
 # Selecteer alle concepten en hun supertype die een sh:path hebben waarin "nen2660" voorkomen.
 	        ?uriConceptA rdfs:subClassOf* ?uriSupertype .
     		?uriSupertype skos:prefLabel ?labelRelatieVanObject ;
@@ -27,11 +33,7 @@ WHERE {
 # Presenteer de multipliciteit informatie op een overzichtelijk manier in één kolom.
     BIND (CONCAT(IF(BOUND(?qshapeMinCount),STR(?qshapeMinCount),"0"),":",IF(BOUND(?qshapeMaxCount),STR(?qshapeMaxCount),"n")) AS ?labelMultipliciteit) 
 
-# Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022" en in de "IMBOR Kern" zitten.
-# (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
-    coll:IMBOR restapi:hasMember ?uriConceptA .
-    coll:IMBOR-versie-2022 restapi:hasMember ?uriConceptA .
-    imbor: restapi:hasMember ?uriConceptA .
+
         
 # Selecteer Label waar aanwezig. 
     OPTIONAL{?uriConceptA skos:prefLabel ?labelConceptA}

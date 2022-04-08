@@ -13,6 +13,12 @@ SELECT DISTINCT ?uriConcept ?labelConcept ?uriShapeSupertype ?labelShape ?labelM
 
 WHERE {
 
+# Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022" en in de "IMBOR Kern" zitten.
+# (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
+    coll:IMBOR restapi:hasMember ?uriConcept .
+    coll:IMBOR-versie-2022 restapi:hasMember ?uriConcept .
+    imbor: restapi:hasMember ?uriConcept .
+
 # Selecteer alle klassen die prefLabel hebben... 
     ?uriConcept a rdfs:Class ;
              	  skos:prefLabel ?labelURI .
@@ -26,12 +32,6 @@ WHERE {
                     		sh:property ?uriShapeSupertype .
   			FILTER(LangMatches(LANG(?labelAttribuutVanObject), "nl")) .
     
-# Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022" en in de "IMBOR Kern" zitten.
-# (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
-    coll:IMBOR restapi:hasMember ?uriConcept .
-    coll:IMBOR-versie-2022 restapi:hasMember ?uriConcept .
-    imbor: restapi:hasMember ?uriConcept .
-
 # Selecteer bij elke shape ("KlasseAttribuut") het Attribuut waar het betrekking op heeft ...
     ?uriShapeSupertype sh:path ?uriAttribuut .
     

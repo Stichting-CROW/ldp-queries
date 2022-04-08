@@ -14,15 +14,15 @@ SELECT DISTINCT ?uriConcept ?labelConcept ?uriShape ?labelShape ?labelMultiplici
 
 WHERE { 
 
-# Selecteer alle klassen die met een propertyshape gebonden zijn. 
-	?uriConcept a rdfs:Class ;
-    			  sh:property ?uriShape .
-
 # Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022" en in de "IMBOR Kern" zitten.
 # (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
     coll:IMBOR restapi:hasMember ?uriConcept .
     coll:IMBOR-versie-2022 restapi:hasMember ?uriConcept .
     imbor: restapi:hasMember ?uriConcept .
+
+# Selecteer alle klassen die met een propertyshape gebonden zijn. 
+	?uriConcept a rdfs:Class ;
+    			  sh:property ?uriShape .
     
 # Selecteer bij elke shape ("KlasseAttribuut") het Attribuut waar het betrekking op heeft ...
     ?uriShape sh:path ?uriAttribuut .

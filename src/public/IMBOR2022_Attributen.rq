@@ -11,17 +11,17 @@ PREFIX nen2660: <https://w3id.org/nen2660/def#>
 SELECT DISTINCT ?uriConcept ?labelConcept ?definitieConcept ?toelichtingConcept ?uriSupertype ?uriGrootheid
 
 WHERE { 
-    
-# Selecteer alle attributen en optioneel hun parents.   
-	?uriConcept a rdf:Property .
-    OPTIONAL {?uriConcept rdfs:subPropertyOf ?uriSupertype }.
-    
+
 # Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022" en in de "IMBOR Kern" zitten.
 # (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
     coll:IMBOR restapi:hasMember ?uriConcept .
     coll:IMBOR-versie-2022 restapi:hasMember ?uriConcept .
     imbor: restapi:hasMember ?uriConcept .
 
+# Selecteer alle attributen en optioneel hun parents.   
+	?uriConcept a rdf:Property .
+    OPTIONAL {?uriConcept rdfs:subPropertyOf ?uriSupertype }.
+ 
 # Selecteer Label, Synoniem, Definitie, Toelichting waar aanwezig. 
     OPTIONAL{?uriConcept skos:prefLabel ?labelConcept}
     OPTIONAL{?uriConcept skos:definition ?definitieConcept}
