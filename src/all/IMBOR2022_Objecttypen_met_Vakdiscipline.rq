@@ -12,18 +12,18 @@ SELECT ?uriConcept ?labelConcept ?definitieConcept ?toelichtingConcept ?uriVakdi
 
 WHERE { 
 
+# Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022" en in de "IMBOR Kern" zitten.
+# (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
+    coll:IMBOR restapi:hasMember ?uriConcept .
+    coll:IMBOR-versie-2022 restapi:hasMember ?uriConcept .
+    imbor: restapi:hasMember ?uriConcept .
+
 # Selecteer alles klassen die NIET abstract zijn EN die lid zijn van een Vakdiscipline (dit zijn alleen ObjectTypen)
 	?uriConcept a rdfs:Class .
     ?uriConcept dash:abstract false .
     
     ?uriVakdiscipline rdfs:member ?uriConcept .
     ?uriVakdiscipline a rdfs:Container .
-
-# Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022" en in de "IMBOR Kern" zitten.
-# (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
-    coll:IMBOR restapi:hasMember ?uriConcept .
-    coll:IMBOR-versie-2022 restapi:hasMember ?uriConcept .
-    imbor: restapi:hasMember ?uriConcept .
     
 # Selecteer Label, Synoniem, Definitie, Toelichting waar aanwezig. 
     OPTIONAL{?uriConcept skos:prefLabel ?labelConcept}

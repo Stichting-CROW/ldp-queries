@@ -10,16 +10,16 @@ PREFIX restapi: <https://data.crow.nl/rest-api/def#>
 SELECT ?uriTerm ?labelTerm ?synoniemTerm ?definitieTerm ?toelichtingTerm ?uriCollectie ?labelCollectie
 
 WHERE { 
-
-# Selecteer alle SKOS concepten en zoek de collecties daarbij. 
-	?uriTerm a skos:Concept .
-    ?uriCollectie skos:member ?uriTerm .
-
+    
 # Kies alleen degene die voor de REST-API gedefinieerd zijn als "IMBOR", "versie 2022" en in de "IMBOR Vocabulaire" zitten.
 # (Omdat het hostingplatform van het SPARQL-endpoint geen grafen onderscheidt, is deze tussenstap (voorlopig) nodig)
     coll:IMBOR restapi:hasMember ?uriTerm .
     coll:IMBOR-versie-2022 restapi:hasMember ?uriTerm .
     imbor-term: restapi:hasMember ?uriTerm .
+
+# Selecteer alle SKOS concepten en zoek de collecties daarbij. 
+	?uriTerm a skos:Concept .
+    ?uriCollectie skos:member ?uriTerm .
 
 # Selecteer Label, Synoniem, Definitie, Toelichting waar aanwezig. 
     OPTIONAL{?uriTerm skos:prefLabel ?labelTerm}
