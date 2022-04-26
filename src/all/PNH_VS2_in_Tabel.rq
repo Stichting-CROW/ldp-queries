@@ -31,6 +31,8 @@ where {
         ?s cspec:specificeert ?p .
         ?p cspec:naam ?pn .
         optional {
+            ?p cspec:code ?pc
+        }optional {
             ?bp cspec:heeftOnderliggende ?p .
             ?bp cspec:naam ?bpn .
         }
@@ -43,6 +45,7 @@ where {
         bind(REPLACE(str(?ap), "@nl-NL", "", "i") as ?aandachtsPunt)
         bind(REPLACE(str(?k), "@nl-NL", "", "i") as ?karakter)
         bind(REPLACE(str(?pn), "@nl-NL", "", "i") as ?procesNaam)
+        bind(REPLACE(str(?pc), "@nl-NL", "", "i") as ?procesCode)
         bind(REPLACE(str(?bpn), "@nl-NL", "", "i") as ?bovenLiggendProcesNaam)
         FILTER regex(str(?p), "/pnh/vs2/")
     }
