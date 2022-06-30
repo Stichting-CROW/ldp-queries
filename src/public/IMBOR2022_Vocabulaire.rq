@@ -1,4 +1,4 @@
-# Alle inhoud van de vocabulaire (term per collectie)
+# Alle inhoud van de vocabulaire (term per collectie). Inclusief de verwijzing vanuit de IMBOR Kern.
 
 PREFIX imbor: <https://data.crow.nl/imbor/def/>
 PREFIX imbor-term: <https://data.crow.nl/imbor/term/> 
@@ -7,7 +7,7 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX coll: <https://data.crow.nl/rest-api/id#>
 PREFIX restapi: <https://data.crow.nl/rest-api/def#>
 
-SELECT ?uriTerm ?labelTerm ?synoniemTerm ?definitieTerm ?toelichtingTerm ?uriCollectie ?labelCollectie
+SELECT ?uriTerm ?labelTerm ?synoniemTerm ?definitieTerm ?toelichtingTerm ?uriCollectie ?labelCollectie ?uriConcept
 
 WHERE { 
     
@@ -27,6 +27,9 @@ WHERE {
     OPTIONAL{?uriTerm skos:definition ?definitieTerm}
     OPTIONAL{?uriTerm skos:note ?toelichtingTerm}
     OPTIONAL{?uriCollectie skos:prefLabel ?labelCollectie}
+
+# En presenteer de URI van het IMBOR Concept uit de IMBOR Kern Ontologie (zodat de link tussen de Vocabulair en Kern zichtbaar is)
+    OPTIONAL{?uriConcept rdfs:seeAlso ?uriTerm}
   
 } 
 ORDER BY STR(?labelCollectie) STR(?labelTerm) 
