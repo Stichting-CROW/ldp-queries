@@ -11,7 +11,7 @@ files=$@
 
 # if empty, check for git changed files
 if [[ -z $files ]]; then
-	echo -e "${BLUE}# No file argument, checking for git changes in src/... ${NC}"
+	echo -e "#${BLUE} No file argument, checking for git changes in src/... ${NC}"
 	if output=$(git status --porcelain src/) && [ -z "$output" ]; then
 		echo -e $CMD_HELP
 		exit -1
@@ -21,8 +21,8 @@ if [[ -z $files ]]; then
 fi
 
 echo $files | while read -r queryfile; do
-	echo -e "${BLUE}# $queryfile${NC}"
-	curl -X POST -L -s \
+	echo -e "#${BLUE} $queryfile${NC}"
+	curl -X POST -L \
 		-H "Content-Type: application/sparql-query" \
 		-H "Accept: text/csv" \
 		--data-binary "@$queryfile" \
