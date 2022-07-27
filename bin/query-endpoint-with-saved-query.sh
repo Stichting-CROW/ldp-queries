@@ -22,10 +22,10 @@ fi
 
 echo $files | while read -r queryfile; do
 	echo -e "${BLUE}# $queryfile${NC}"
-	curl -X POST -L \
+	curl -X POST -L -s \
 		-H "Content-Type: application/sparql-query" \
 		-H "Accept: text/csv" \
 		--data-binary "@$queryfile" \
 		-u ${LDP_USER}:${LDP_PASSWORD} \
-		${LDP_ENDPOINT} | column -nts, | less
+		${LDP_ENDPOINT}
 done
