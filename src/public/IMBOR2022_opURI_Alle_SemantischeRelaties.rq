@@ -8,7 +8,7 @@ PREFIX imbor: <https://data.crow.nl/imbor/def/>
 PREFIX coll: <https://data.crow.nl/rest-api/id#>
 PREFIX restapi: <https://data.crow.nl/rest-api/def#>
 
-SELECT ?uriConceptA ?labelConceptA ?uriRelatie ?labelRelatie ?labelRelatieVanObject ?labelMultipliciteit ?uriConceptB ?labelConceptB
+SELECT DISTINCT ?uriConceptA ?labelConceptA ?uriRelatie ?labelRelatie ?labelRelatieVanObject ?labelMultipliciteit ?uriConceptB ?labelConceptB
 
 WHERE { 
 
