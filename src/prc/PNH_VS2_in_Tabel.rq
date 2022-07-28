@@ -10,13 +10,15 @@ select
     ?procesEisId
     ?eisNaam
     ?eisTekst
+    ?eisVolgnummer
     ?karakter
     ?aandachtsPunt
     ?procesId
     ?procesNaam
     ?procesCode
     ?bovenliggendProces
-    ?bovenLiggendProcesNaam 
+    ?bovenLiggendProcesNaam
+
 where { 
     {
         ?s a cspec:Specificatie .
@@ -24,6 +26,9 @@ where {
         ?s cspec:beschrijving ?et .
         optional {
             ?s pnhspec:aandachtspunt ?ap .
+        }
+        optional {
+            ?s cspec:code ?ec  .
         }
         optional {
             ?s pnhspec:karakter ?k .
@@ -37,17 +42,18 @@ where {
             ?bp cspec:naam ?bpn .
         }
         
-        bind(REPLACE(str(?s), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?procesEisId)
-        bind(REPLACE(str(?p), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?procesId)
-        bind(REPLACE(str(?bp), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?bovenliggendProces)
+        bind(REPLACE(str(?s), "http://otl.noord-holland.nl/era/vs2/", "", "i") as ?procesEisId)
+        bind(REPLACE(str(?p), "http://otl.noord-holland.nl/era/vs2/", "", "i") as ?procesId)
+        bind(REPLACE(str(?bp), "http://otl.noord-holland.nl/era/vs2/", "", "i") as ?bovenliggendProces)
         bind(REPLACE(str(?en), "@nl-NL", "", "i") as ?eisNaam)
         bind(REPLACE(str(?et), "@nl-NL", "", "i") as ?eisTekst)
+        bind(REPLACE(str(?ec), "@nl-NL", "", "i") as ?eisVolgnummer)
         bind(REPLACE(str(?ap), "@nl-NL", "", "i") as ?aandachtsPunt)
         bind(REPLACE(str(?k), "@nl-NL", "", "i") as ?karakter)
         bind(REPLACE(str(?pn), "@nl-NL", "", "i") as ?procesNaam)
         bind(REPLACE(str(?pc), "@nl-NL", "", "i") as ?procesCode)
         bind(REPLACE(str(?bpn), "@nl-NL", "", "i") as ?bovenLiggendProcesNaam)
-        FILTER regex(str(?p), "/pnh/vs2/")
+        FILTER regex(str(?p), "/era/vs2/")
     }
     union
     {
@@ -61,13 +67,13 @@ where {
             ?p cspec:code ?pc
         }
         
-        bind(REPLACE(str(?p), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?procesId)
-        bind(REPLACE(str(?bp), "http://linkeddata.crow.nl/publication-v2/ns/pnh/vs2/20210429/", "", "i") as ?bovenliggendProces)
+        bind(REPLACE(str(?p), "http://otl.noord-holland.nl/era/vs2/", "", "i") as ?procesId)
+        bind(REPLACE(str(?bp), "http://otl.noord-holland.nl/era/vs2/", "", "i") as ?bovenliggendProces)
         bind(REPLACE(str(?pn), "@nl-NL", "", "i") as ?procesNaam)
         bind(?pc AS ?procesCode)
         bind(REPLACE(str(?bpn), "@nl-NL", "", "i") as ?bovenLiggendProcesNaam)
         FILTER NOT EXISTS {?s cspec:specificeert ?p }
-        FILTER regex(str(?p), "/pnh/vs2/")
+        FILTER regex(str(?p), "/era/vs2/")
     }
 }
 order by
