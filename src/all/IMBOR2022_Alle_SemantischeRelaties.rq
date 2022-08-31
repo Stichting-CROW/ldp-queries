@@ -19,15 +19,14 @@ WHERE {
     imbor: restapi:hasMember ?uriConceptA .
     
 # Selecteer alle concepten en hun supertype die een sh:path hebben waarin "nen2660" voorkomen.
-	        ?uriConceptA rdfs:subClassOf* ?uriSupertype .
+	        ?uriConceptA rdfs:subClassOf* ?uriSupertype ;
+                         skos:prefLabel ?labelConceptA .
     		?uriSupertype skos:prefLabel ?labelRelatieVanObject ;
-                    		sh:property ?uriShapeSupertype .
-    		?uriShapeSupertype sh:path ?uriRelatie .
-  			FILTER(LangMatches(LANG(?labelRelatieVanObject), "nl")) .
-    		FILTER(STRSTARTS(STR(?uriRelatie), STR(nen2660:)))
-
-# Vraag voor elk supertype de klasse op waar de relatie naar linkt    
-    		?uriShapeSupertype sh:qualifiedValueShape/sh:class ?uriConceptB .
+                    	  sh:property ?uriShapeSupertype .
+            FILTER(LangMatches(LANG(?labelRelatieVanObject), "nl")) .              
+    		?uriShapeSupertype sh:path ?uriRelatie ;
+                               skos:prefLabel ?labelRelatie .
+            FILTER(STRSTARTS(STR(?uriRelatie), STR(nen2660:)))
 
 # ... en laat optioneel zien of er extra informatie over de koppeling is.
     OPTIONAL {?uriShapeSupertype sh:qualifiedMinCount ?qshapeMinCount} .
@@ -35,13 +34,9 @@ WHERE {
 # Presenteer de multipliciteit informatie op een overzichtelijk manier in één kolom.
     BIND (CONCAT(IF(BOUND(?qshapeMinCount),STR(?qshapeMinCount),"0"),":",IF(BOUND(?qshapeMaxCount),STR(?qshapeMaxCount),"n")) AS ?labelMultipliciteit) 
 
+# Vraag voor elk supertype de klasse op waar de relatie naar linkt    
+    		?uriShapeSupertype sh:qualifiedValueShape/sh:class ?uriConceptB .
+            ?uriConceptB skos:prefLabel ?labelConceptB .
 
-        
-# Selecteer Label waar aanwezig. 
-    OPTIONAL{?uriConceptA skos:prefLabel ?labelConceptA}
-    OPTIONAL{?uriShapeSupertype skos:prefLabel ?labelShape} 
-	OPTIONAL{?uriShapeSupertype skos:prefLabel ?labelRelatie }
-    OPTIONAL{?uriConceptB skos:prefLabel ?labelConceptB}
 } 
-
-ORDER BY STR(?labelConceptA) STR(?labelRelatie) STR(?labelRelatieVanObject) STR(?labelConceptB)
+ORDER BY STR(?labelConceptA) STR(?labelRelatieVanObject) STR(?labelConceptB)
