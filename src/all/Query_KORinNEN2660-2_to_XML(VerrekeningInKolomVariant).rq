@@ -1,0 +1,127 @@
+# from file GitHub\Stichting-CROW\kor\data\KOR2023\Query_KORinNEN2660-2_to_XML(VerrekeningInKolomVariant).rq
+# from file GitHub\Stichting-CROW\kor\data\KOR2023\Query_KORinNEN2660-2_to_XML(VerrekeningInKolomVariant).rq
+# from file GitHub\Stichting-CROW\kor\data\KOR2023\Query_KORinNEN2660-2_to_XML(VerrekeningInKolomVariant).rq
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX nen2660: <https://w3id.org/nen2660/def#>
+
+### ----- CHECK DEZE PREFIX -----
+PREFIX kor: <https://data.crow.nl/kor/def/>  
+###
+
+### ----- TOELICHTING AFWIJKINGEN NIEUWE XML OUTPUT VS ORIGINELE XML INPUT -----
+    #Variabelen die verloren zijn gegaan tijdens de overstap naar Laces: ?Schaalwaarde_ID ?EigenschapUoMWaarde_ID ?MeeteenheidMeethoeveelheid_ID 
+    #Variabelen die getransformeerd zijn tijdens de publicatie in NEN-RDF schema: ?Waarde ?UoM ?Meeteenheid ?Meethoeveelheid
+        #Deze informatie was tijdens de publicatie samengevoegd en wordt in deze XML output weergegeven onder de variabele: ?EigenschapWaarde
+SELECT ?schaalbalkUri ?Schaalbalk ?Schaalbalk_ID ?Schaalwaardenaam  ?Meetinstructie ?Omschrijving ?Afbeelding ?Afbeelding_ID ?AfbeeldingURI ?Eigenschap ?EigenschapIndex ?EigenschapWaarde ?verrekeningOpBeeld ?verrekeningOpFrequentie (GROUP_CONCAT(?groupName; separator="-") AS ?SchaalbalkGroep) ?groep ?groepLabel 
+
+WHERE {
+    #Om te voorkomen dat er dubbelen in ?SchaalbalkGroep verschijnen is de hele query in een subquery gezet
+    {
+    SELECT DISTINCT ?schaalbalkUri ?Schaalbalk ?Schaalbalk_ID ?Meetinstructie ?Schaalwaardenaam ?Omschrijving ?Afbeelding ?Afbeelding_ID  ?AfbeeldingURI ?Eigenschap ?EigenschapIndex ?EigenschapWaarde ?verrekeningOpBeeld ?verrekeningOpFrequentie ?groupName ?groep ?groepLabel 
+    WHERE {
+        ?schaalbalkUri a kor:Beeldmeetlat ;
+            skos:prefLabel ?Schaalbalk ;
+            nen2660:hasPart ?schaalwaardenaamUri ;
+            nen2660:isDescribedBy ?kwaliteitsniveauUri .
+        OPTIONAL {?schaalbalkUri skos:notation ?Schaalbalk_ID }     
+        OPTIONAL {?schaalbalkUri nen2660:isDescribedBy ?MeetinstructieUri .
+                  ?MeetinstructieUri a kor:Meetinstructie ;
+                                      skos:prefLabel ?Meetinstructie }
+        ?schaalwaardenaamUri skos:prefLabel ?schaalwaardenaamFull ;
+            ?korEigenschap ?EigenschapWaarde .
+      	OPTIONAL {?schaalwaardenaamUri nen2660:isDescribedBy ?afbeeldingGUID .
+                    ?afbeeldingGUID   skos:prefLabel ?Afbeelding .
+                    OPTIONAL {?afbeeldingGUID skos:notation ?Afbeelding_ID .}
+                    OPTIONAL {?afbeeldingGUID rdfs:isDefinedBy ?AfbeeldingURI . } 
+                 }
+        OPTIONAL {?schaalbalkUri kor:aspect1 ?Eigenschap1 . }
+      	OPTIONAL {?schaalbalkUri kor:aspect2 ?Eigenschap2 . }
+        OPTIONAL {?schaalbalkUri kor:aspect3 ?Eigenschap3 . }
+        OPTIONAL {?schaalbalkUri kor:aspect4 ?Eigenschap4 . }
+        OPTIONAL {?schaalbalkUri kor:aspect5 ?Eigenschap5 . }
+                  
+        ?korEigenschap a rdf:Property ;
+            skos:prefLabel ?Eigenschap .
+
+        BIND(IF(STR(?Eigenschap) = STR(?Eigenschap1), 1, 
+                IF(STR(?Eigenschap) = STR(?Eigenschap2), 2, 
+                    IF(STR(?Eigenschap) = STR(?Eigenschap3), 3, 
+                        IF(STR(?Eigenschap) = STR(?Eigenschap4), 4, 
+                            IF(STR(?Eigenschap) = STR(?Eigenschap5), 5, 
+                    ""))))) AS ?EigenschapIndex)
+
+        ?groep rdfs:member ?schaalbalkUri ;
+               skos:prefLabel ?groepLabel .
+        
+        #Met deze subquery voegen we de verschillende omschrijvingen samen die een eigenschap kan hebben voor één enkele schaalwaardenaam.
+        ### ----- DEZE SUBQUERY KAN WEG ZODRA ER VOOR ALLE EIGENSCHAPPEN NOG MAAR ÉÉN WAARDE PER SCHAALWAARDENAAM IS -----
+        {
+            SELECT ?schaalbalkUri ?Schaalwaardenaam (GROUP_CONCAT(?omschrijving; separator=" -OF- ") AS ?Omschrijving)
+            WHERE {
+                ?schaalbalkUri a kor:Beeldmeetlat ;
+                    nen2660:isDescribedBy ?kwaliteitsniveauUri ;
+                    nen2660:hasPart ?schaalwaardenaamUri .
+                ?schaalwaardenaamUri skos:prefLabel ?schaalwaardenaamFull .
+                ?kwaliteitsniveauUri ?predicate ?omschrijving .
+                ?predicate skos:prefLabel ?Schaalwaardenaam . 
+                BIND( STRBEFORE( STR(?schaalwaardenaamFull), " | ") AS ?niveauwaarde) .
+                FILTER(?niveauwaarde = ?Schaalwaardenaam) .
+            }
+            GROUP BY ?schaalbalkUri ?Schaalwaardenaam
+        } .
+
+        #De volgende subqueries zorgen ervoor dat de RAW codes worden samengevoegd indien er meerdere zijn per categorie (dus OF meerdere voor op Beeld, OF meerdere voor op Frequentie, op Beeld en op Frequentie worden onderling niet samengevoegd) 
+        OPTIONAL {
+            {
+                SELECT ?schaalbalkUri (GROUP_CONCAT(?rawCode; separator=" - ") AS ?verrekeningOpBeeld)
+                WHERE {
+                    ?schaalbalkUri kor:opBeeld ?rawObject .
+                    ?rawObject skos:prefLabel ?rawCode .
+                    }
+                GROUP BY ?schaalbalkUri
+                }
+                     
+        }
+        ### ----- Indien er toch gekozen wordt voor een dubbele rij ipv een extra kolom om de op Beeld en op Frequentie RAW codes weer te geven, zet dan de SPARQL functie 'UNION' tussen deze twee subqueries (op de locatie van deze comment dus) en uncomment de onderstaande BINDs (zet ook ?Verrekening en ?HoofdcodeRaw in de SELECT van de query bovenaan en pas de GROUP BY aan onderaan (copy/paste SELECT output in GROUP BY))
+        OPTIONAL { 
+            {
+                SELECT ?schaalbalkUri (GROUP_CONCAT(?rawCode; separator=" - ") AS ?verrekeningOpFrequentie)
+                WHERE {
+                    ?schaalbalkUri kor:opFrequentie ?rawObject .
+                    ?rawObject skos:prefLabel ?rawCode .
+                    }
+                GROUP BY ?schaalbalkUri 
+            }
+        }
+
+        #Deze subquery achterhaalt welke groepen er boven een Beeldmeetlat zitten, dit is nodig om de ?SchaalbalkGroep te creeren
+        {
+        SELECT ?groep2 ?groep (COUNT(DISTINCT ?x) AS ?depth) ?groupName
+        WHERE {
+        ?groep2 rdfs:member* ?x .
+        ?x rdfs:member* ?groep .
+        ?groep2 skos:prefLabel ?groupName .
+        }
+        GROUP BY ?groep2 ?groep ?groupName
+        ORDER BY DESC(?depth)
+        }
+
+        BIND (STRBEFORE( STR(?schaalwaardenaamFull), " | ") AS ?niveauwaarde) .
+#        OPTIONAL {
+#            BIND (CONCAT("op beeld via RAW-hoofdcode ", ?verrekeningB) AS ?verrekeningOpB) . 
+#        } OPTIONAL {
+#            BIND (CONCAT("op frequentie via RAW-hoofdcode ", ?verrekeningF) AS ?verrekeningOpF) .
+#        }
+
+        ### ----- Uncomment deze twee BIND functies indien er toch wordt gekozen voor twee rijen met RAW codes (1 op Beeld, 1 op Frequentie) ipv twee kolommen (?verrekeningOpB, ?verrekeningOpF) -----
+        #BIND (COALESCE(?verrekeningOpB, ?verrekeningOpF) AS ?Verrekening) .
+        #BIND (COALESCE(?verrekeningB, ?verrekeningF) AS ?HoofdcodeRaw) .
+        FILTER(?niveauwaarde = ?Schaalwaardenaam) .
+
+    }
+    ORDER BY ?SchaalbalkGroep ?Schaalbalk ?Schaalwaardenaam ?EigenschapIndex
+    }
+}
+GROUP BY ?schaalbalkUri ?Schaalbalk ?Schaalbalk_ID ?Meetinstructie ?Schaalwaardenaam ?Omschrijving ?Afbeelding ?Afbeelding_ID ?AfbeeldingURI ?EigenschapIndex ?Eigenschap ?EigenschapWaarde ?verrekeningOpBeeld ?verrekeningOpFrequentie  ?groep ?groepLabel 
