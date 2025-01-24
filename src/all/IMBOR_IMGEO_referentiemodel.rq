@@ -1,0 +1,44 @@
+## Deze query zoekt op het IMBOR SPARQL-endpoint binnen de 'informatieve' graaf van IMBOR
+## Dat is het groene gedeelte in dit schema: https://docs.crow.nl/imbor/techdoc/img/Modulaire%20opzet%20IMBOR-Fysiek%20Datamodel%20LD.drawio.png?raw=true
+## Specifiek wordt vervolgens de informatie uit RefModel - Addendum: Referentiemodellen gebruikt 
+
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX imbor: <https://data.crow.nl/imbor/def/>
+PREFIX imbor-ref: <https://data.crow.nl/imbor-ref/def/>
+
+SELECT 
+?IMBOR_uri
+?IMBOR_label
+?IMGEO_label
+?AttritbuutEnDomeinwaarde 
+?Type
+?mapping_relatieinfo 
+
+WHERE {
+## URI in mapping informatie met een relatie naar een IMBOR concept:
+  ?mapping_uri imbor-ref:imborObjecttype ?IMBOR_uri .
+## URI in mapping informatie met als bron het IMGEO model (IMGEO URI):
+  ?mapping_uri dct:source <https://data.crow.nl/imbor-ref/id/9692407e-3ae7-4162-86ab-545651f0141c> .
+## URI in mapping informatie met relatie naar een Objecttype uit een extern model + een prefLabel:
+  ?mapping_uri imbor-ref:refObjecttype/skos:prefLabel ?IMGEO_label .
+## Kijk of er informatie over de soort relatie is:
+  OPTIONAL { ?mapping_uri skos:scopeNote ?mapping_relatieinfo }
+
+## URI in mapping informatie met relatie naar AttribuutDomeinwaarde:  
+  OPTIONAL { 	?mapping_uri imbor-ref:refAttribuutDomeinwaarde ?mapping_attribuutdomeinwaarde .
+## Zoek alle items die daar aan gekoppeld zijn:
+  				?mapping_attribuutdomeinwaarde rdf:rest*/rdf:first ?list_item .
+## Zoek de preflabel en het type erbij:     
+    			?list_item skos:prefLabel ?AttritbuutEnDomeinwaarde .
+    			?list_item rdf:type ?Type . }
+  
+## De labels van de IMBOR typen staan alleen in het kernmodel, deze wordt daarom hiervoor aangeroepen:  
+   SERVICE <https://hub.laces.tech/crow/imbor/2022/p/kern/sparql> {
+    ?IMBOR_uri skos:prefLabel ?IMBOR_label .}
+} 
+## Sorteren op IMBOR label:
+ORDER BY ?IMBOR_label
+
